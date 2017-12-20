@@ -1,0 +1,25 @@
+.cust-profile {
+  font-size: 250px;
+}
+.checkbox-left {
+  width:  10%;
+  text-align: left;
+}
+.cust-list {
+  font-size: 100px;
+}
+.text-pink {
+  color: #FF69B4;
+}
+.extra-space {
+  padding-top: 15px; 
+}
+
+.dropdown-menu .divider {
+  height: 2px;
+  padding: 0px;
+}
+
+.pull-left {
+	padding-left: 0px;
+}
