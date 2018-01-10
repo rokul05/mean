@@ -154,7 +154,7 @@
         $scope.vm.remove();
         $httpBackend.flush();
 
-        expect($state.go).toHaveBeenCalledWith('customers.list');
+        expect($state.go).toHaveBeenCalledWith('customers.listicon');
       });
 
       it('should should not delete the Customer and not redirect', function () {

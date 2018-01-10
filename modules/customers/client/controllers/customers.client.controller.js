@@ -56,7 +56,7 @@
       // Redirect after save
       customer.$save(function (response) {
         Notify.sendMsg('NewCustomer', { 'id': response._id });
-        $state.go('customers.list');
+        $state.go('customers.listicon');
 
         $scope.ok();
 //        $location.path('customers/' + response._id);
@@ -106,7 +106,7 @@
 
       customer.$update(function () {
         $scope.ok();
- //       $state.go('customers.list');
+ //       $state.go('customers.listicon');
 //        $location.path('customers/' + customer._id);
       }, function (errorResponse) {
         $scope.error = errorResponse.data.message;

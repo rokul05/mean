@@ -1,15 +1,23 @@
 'use strict';
 
-angular.module('core').controller('HomeController', ['$scope', 'Authentication',
-  function ($scope, Authentication) {
+angular.module('core').controller('HomeController', ['$scope', 'Authentication', 'CustomersService',
+  function ($scope, Authentication, Customers) {
     // This provides Authentication context.
     $scope.authentication = Authentication;
+
+
+    $scope.customersCount = Customers.countCustomers(function(data) {
+      $scope.customersCount = data;
+      $scope.alerts[0].total = $scope.customersCount.count;
+      console.log('Virtual customers ', $scope.customersCount);
+    });
+
 
     $scope.alerts = [
       {
         icon: 'glyphicon-user',
         colour: 'btn-success',
-        total: '20,408',
+        total: $scope.customersCount.count,
         description: 'TOTAL CUSTOMERS'
       },
       {

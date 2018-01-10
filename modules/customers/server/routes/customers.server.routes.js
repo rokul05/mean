@@ -12,6 +12,9 @@ module.exports = function(app) {
     .get(customers.list)
     .post(customers.create);
 
+  app.route('/api/customers/custCount').all()
+    .get(customers.custCount);
+
   app.route('/api/customers/:customerId').all(customersPolicy.isAllowed)
     .get(customers.read)
     .put(customers.update)

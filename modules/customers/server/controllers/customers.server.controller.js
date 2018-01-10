@@ -9,6 +9,26 @@ var path = require('path'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   _ = require('lodash');
 
+
+
+/**
+ * Count of Customers
+ */
+exports.custCount = function(req, res) {
+  Customer.count({}, function(err, customerCount) {
+    if (err) {
+      return res.status(400).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      var data = {};
+      data.count = customerCount;
+      res.jsonp(data);
+    }
+  });
+};
+
+
 /**
  * Create a Customer
  */

@@ -3,7 +3,7 @@
 
   describe('Customers List Controller Tests', function () {
     // Initialize global variables
-    var CustomersListController,
+    var CustomersListIconController,
       $scope,
       $httpBackend,
       $state,
@@ -58,7 +58,7 @@
       };
 
       // Initialize the Customers List controller.
-      CustomersListController = $controller('CustomersListController as vm', {
+      CustomersListIconController = $controller('CustomersListIconController as vm', {
         $scope: $scope
       });
 

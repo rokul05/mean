@@ -18,9 +18,17 @@
         url: '',
         templateUrl: 'modules/customers/client/views/list-customers.client.view.html',
         controller: 'CustomersListController',
-//        controllerAs: 'vm',
         data: {
           pageTitle: 'Customers List'
+        }
+      })
+      .state('customers.listicon', {
+        url: '',
+        templateUrl: 'modules/customers/client/views/listicon-customers.client.view.html',
+        controller: 'CustomersListIconController',
+//        controllerAs: 'vm',
+        data: {
+          pageTitle: 'Customers List (Icons)'
         }
       })
       .state('customers.create', {

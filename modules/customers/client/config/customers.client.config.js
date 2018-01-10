@@ -17,6 +17,12 @@ angular.module('customers').run(['Menus',
       state: 'customers.list'
     });
 
+    // Add the dropdown icons list item
+    Menus.addSubMenuItem('topbar', 'customers', {
+      title: 'List Customers (Icons)',
+      state: 'customers.listicon'
+    });
+
     // Add the dropdown create item
     Menus.addSubMenuItem('topbar', 'customers', {
       title: 'Create Customers',
