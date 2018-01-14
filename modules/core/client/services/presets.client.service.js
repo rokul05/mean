@@ -14,11 +14,10 @@
     vm.channels = [
       {
         label: 'Choose Channel',
-        value: ''
+        value: 'no'
       },     
       {
-        label: '',
-        value: 'divider'
+        value: false
       },     
       {
         label: 'Facebook',
@@ -34,44 +33,27 @@
       }
     ];
 
-
-/*
-    vm.pageSides = [
+    vm.filterList = [
       {
-        label: gettext('Front'),
-        value: 'front'
+        label: 'Facebook',
+        value: 'facebook'
       }, 
       {
-        label: gettext('Back'),
-        value: 'back'
+        label: 'Twitter',
+        value: 'twitter'
+      }, 
+      {
+        label: 'Email',
+        value: 'email'
+      },
+      { 
+        value: false
+      }, 
+      { 
+        label: 'Show all',
+        value: 'all'
       }
     ];
-
-
-    vm.trimPageSizes = [
-      { label: gettext('US_Letter 8.5 11 Inch'), 
-        value: {
-          width: units.create(8.5, 'in'),
-          height: units.create(11, 'in')        
-        }
-      },
-      { label: gettext('A4 210 297 mm'), 
-        value: {
-          width: units.create(210, 'mm'),
-          height: units.create(297, 'mm')        
-        }
-      },
-    ];
-
-    vm.pressTypes = [
-      { label: gettext('Sheet-fed'),
-        value: 'sheetFed'
-      },
-      { label: gettext('Fractional Webs'),
-        value: 'web'
-      }      
-    ];
-*/
 
 
     return vm;

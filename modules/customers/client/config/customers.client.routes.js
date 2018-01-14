@@ -18,6 +18,7 @@
         url: '',
         templateUrl: 'modules/customers/client/views/list-customers.client.view.html',
         controller: 'CustomersListController',
+        controllerAs: 'vm',
         data: {
           pageTitle: 'Customers List'
         }

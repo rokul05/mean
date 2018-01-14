@@ -39,3 +39,141 @@ a:hover .header-profile-image {
 body {
     background-color: #eeeeee;
     }
+
+.white-color,
+.white-color:visited,
+.white-color:hover,
+.white-color:active,
+.white-color:focus
+{
+  color: white;
+}
+
+.company-background-color
+{
+  background-color: #FB4F14;
+}
+.company-border-color
+{
+  border-color: #FB4F14;
+}
+button.btn.filter-button
+{
+  background-color: white;
+  color: black;
+}
+button.btn.filter-button:hover,
+button.btn.filter-button:visited,
+button.btn.filter-button:active,
+button.btn.filter-button:focus
+{
+  border-color: white;
+  color: #FB4F14;
+}
+.search-button
+{
+  border-color: #DDDDDD;
+  background-color: white;
+  color: black;
+}
+.search-button:hover,
+.search-button:visited,
+.search-button:active,
+.search-button:focus
+{
+  background-color: #FB4F14;
+  color: white;
+}
+
+.input-group-btn-custom
+{
+  padding-left: 1px;
+}
+
+.search-custom
+{
+  margin-top:25px; 
+  margin-bottom: 10px;
+}
+
+.tr-custom
+{
+  padding: 0;
+}
+
+.thumbnail-custom
+{
+  background-color: #EEEEEE;
+}
+
+.thumbnail-heading-custom,
+.thumbnail-button-custom,
+.thumbnail-collapse-heading-custom
+{
+  margin-top: 0; 
+  margin-bottom: 0;
+}
+
+.thumbnail-collapse-hr-custom
+{
+  margin-top: 3px; 
+  margin-bottom: 10px;
+}
+
+.custom-table > thead > tr > th, 
+.custom-table > tbody > tr > th, 
+.custom-table > tfoot > tr > th, 
+.custom-table > thead > tr > td, 
+.custom-table > tbody > tr > td, 
+.custom-table > tfoot > tr > td 
+{
+  border-top: 0;
+  padding: 0;
+}
+.custom-table tr.st-selected > td > .thumbnail 
+{
+  background-color: #EEEEEE;
+  margin-bottom: 10px;
+  border-left-color: #FB4F14;
+  border-left-width: 5px;
+}
+.custom-table tr.st-selected  button.btn 
+{
+
+  background-color: #FB4F14;
+  border-color: #FB4F14;
+}
+.custom-table tr.st-selected  button.btn:hover,
+.custom-table tr.st-selected  button.btn:visited,
+.custom-table tr.st-selected  button.btn:active,
+.custom-table tr.st-selected  button.btn:focus
+{
+  background-color: #D83A04;
+  border-color: #D83A04;
+  color: white;
+}
+.custom-table tr:not(.st-selected) > td > .thumbnail 
+{
+  margin-bottom: 10px;
+  padding-left: 8px;
+  background-color: white;  
+}
+.custom-table tr:not(.st-selected)  button.btn {
+
+  background-color: #DDDDDD;
+  border-color: #DDDDDD;
+}
+.custom-table tr:not(.st-selected) .thumbnail-button-custom:not(:hover) {
+
+  opacity: 0;
+}
+
+.template-icon .caret {
+  position:absolute;
+  bottom: 2px;
+  right: 0;
+}
+
+.template-icon:not(:hover) .caret {
+  color: black;
+}

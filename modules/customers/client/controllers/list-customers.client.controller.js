@@ -5,9 +5,9 @@
     .module('customers')
     .controller('CustomersListController', CustomersListController);
 
-  CustomersListController.$inject = ['$rootScope', '$scope', 'CustomersService', '$state'];
+  CustomersListController.$inject = ['$rootScope', '$scope', 'CustomersService', '$state', 'Presets'];
 
-  function CustomersListController($rootScope, $scope, customers, $state){
+  function CustomersListController($rootScope, $scope, customers, $state, presets){
 
   /*
     if (DesktopApplication.enabled) {
@@ -16,47 +16,21 @@
     }
   */
     var vm = this;
-    //customers servuce
- /*   vm.customers = customers.list(function(data) {
-      console.log('Virtual customers ', vm.customers);
-      vm.customers = data;
-      if(data && data.length > 0) {
-        if($state.params.customerId === undefined) {
-          $state.go('customers.list.view', {
-            templateId: data[0]._id
-          });
-          vm.currentItem = 0;
-        }
-      }
-    });*/
-    vm.filterList = [
-      { label: 'Fractional Webs',
-        value: 'web'
-      }, 
-      { label: 'Sheet-fed',
-        value: 'sheet'
-      }, 
-      { 
-        value: false
-      }, 
-      { 
-        label: 'Show all',
-        value: 'all'
-      }
-    ];
+
+    vm.filterList = presets.filterList;
 
     vm.filter = 'all';
 
     vm.setFilter = function(index){
       vm.filter = vm.filterList[index].value;
       vm.searchValue = null;
-      if(vm.filter !== 'all')
-        $scope.tableState.search.predicateObject = { 'setup':{ 'pressType': vm.filterList[index].value } };
+      if(vm.filter !== 'all')//channel
+        $scope.tableState.search.predicateObject = { 'channel': vm.filterList[index].value };
       else
         $scope.tableState.search.predicateObject = { '$':'' };
       vm.getPageCustomers();
     };
-
+    console.log('vm - ',vm);
 
     vm.searchValue = null;
     vm.search = function(){
@@ -87,7 +61,6 @@
       vm.setItemsPerPage(vm.pageSizes[0]);    
 */
     vm.setItemsPerPage(vm.pageSizes[0]);    
-
 
     vm.isLoading = false;
 
@@ -120,6 +93,7 @@
       var sort = JSON.stringify(tableState.sort);
       var search = JSON.stringify(tableState.search.predicateObject);
       console.log('Search',JSON.stringify(tableState.search.predicateObject));
+ 
       var items = customers.query({ start: start, number: number, search: search, sort:sort }, function(data, responseHeaders) {
         
         var total = parseInt(responseHeaders('total'));
@@ -138,12 +112,13 @@
           }
 
           if (items.length > 0) {
-            vm.select(vm.templates[vm.currentItem],vm.currentItem);
+            vm.select(vm.customers[vm.currentItem],vm.currentItem);
           }
         }
         
         vm.isLoading = false;
         
+        console.log('tableState', $scope.tableState);
         console.log('done loading');
       });
     };
@@ -156,7 +131,7 @@
       if(customer) {
         vm.currentItem = index;
  //       localStorageService.set('currentItem',index);
-        $state.go('customers.list.view', { customerId: customer._id });
+   //     $state.go('customers.list.view', { customerId: customer._id });
       }
     };
 

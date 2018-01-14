@@ -35,7 +35,7 @@
 
         $scope.changeItem = function(value) {
           if (value !== $scope.ngModel) {
-            if (value === 'divider') value = '';
+          //  if (value === 'divider') value = '';
             $scope.ngModel = value;
             $timeout(function() {
               $scope.ngChange();
