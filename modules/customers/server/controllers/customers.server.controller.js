@@ -138,14 +138,14 @@ var tryParseObject = function(obj, option, defaultValue) {
           objPars = { surname: { $regex: value } };
 
           return objPars;
-
         }
         else if (field === 'channel') {
           value = new RegExp(obj[Object.keys(obj)[0]]);
           objPars = { channel: { $regex: value } };
 
           return objPars;
-        }        else //Press types filter 
+        }
+        else
         {
           obj = obj[Object.keys(obj)[0]];
           field += '.' + Object.keys(obj)[0];
