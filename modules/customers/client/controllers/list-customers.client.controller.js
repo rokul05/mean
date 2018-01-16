@@ -20,6 +20,7 @@
     vm.filterList = presets.filterList;
 
     vm.filter = 'all';
+    $scope.listMode = 'list';
 
     vm.modalUpdate = function(selectedCustomer) {
       var scope = $scope;

@@ -101,7 +101,7 @@
     </form>
   </div>
   <div class="modal-footer">
-    <button class="btn btn-success btn-lg" ng-click="create(customerForm.$valid)" ng-disabled="customerForm.$invalid">{{customer._id ? 'Update' : 'Create'}}</button>
+    <button class="btn btn-success btn-lg" ng-click="create(customerForm.$valid, listMode)" ng-disabled="customerForm.$invalid">{{customer._id ? 'Update' : 'Create'}}</button>
     <button class="btn btn-warning btn-lg" ng-click="cancel()">Cansel</button>
   </div>
   <pre>{{customers | json }}</pre>

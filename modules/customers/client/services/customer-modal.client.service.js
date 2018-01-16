@@ -12,7 +12,6 @@
 
     vm.editCustomer = function($scope, selectedCustomer) {
    
-
       var modalInstance = $modal.open({
  
         templateUrl: 'modules/customers/client/views/form-customer.client.view.html',

@@ -27,7 +27,7 @@
 
     // Create new customer
 //    $scope.create = function (isValid) {
-    $scope.create = function (isValid) {
+    $scope.create = function (isValid, listMode) {
       $scope.error = null;
 
       if($scope.customer._id) {
@@ -56,7 +56,13 @@
       // Redirect after save
       customer.$save(function (response) {
         Notify.sendMsg('NewCustomer', { 'id': response._id });
-        $state.go('customers.listicon');
+        if(listMode === 'icon') {
+          $state.go('customers.listicon');
+        }
+        else {
+          $state.go('customers.list');
+        }
+        
 
         $scope.ok();
 //        $location.path('customers/' + response._id);

@@ -12,6 +12,7 @@
 //    var vm = this;
 
     $scope.customers = customers.query();
+    $scope.listMode = 'icon';
 
     $scope.modalUpdate = function(selectedCustomer) {
       var scope = $scope;
