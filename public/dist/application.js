@@ -4,7 +4,17 @@
 var ApplicationConfiguration = (function () {
   // Init module configuration options
   var applicationModuleName = 'mean';
-  var applicationModuleVendorDependencies = ['ngResource', 'ngAnimate', 'ngMessages', 'ui.router', 'ui.bootstrap', 'ui.utils', 'angularFileUpload', 'ui.toggle'];
+  var applicationModuleVendorDependencies = [
+    'ngResource',
+    'ngAnimate',
+    'ngMessages',
+    'ui.router',
+    'ui.bootstrap',
+    'ui.utils',
+    'smart-table',
+    'angularFileUpload',
+    'ui.toggle'
+  ];
 
   // Add a new vertical module
   var registerModule = function (moduleName, dependencies) {
@@ -222,16 +232,24 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', 'Auth
 
 'use strict';
 
-angular.module('core').controller('HomeController', ['$scope', 'Authentication',
-  function ($scope, Authentication) {
+angular.module('core').controller('HomeController', ['$scope', 'Authentication', 'CustomersService',
+  function ($scope, Authentication, Customers) {
     // This provides Authentication context.
     $scope.authentication = Authentication;
+
+
+    $scope.customersCount = Customers.countCustomers(function(data) {
+      $scope.customersCount = data;
+      $scope.alerts[0].total = $scope.customersCount.count;
+      console.log('Virtual customers ', $scope.customersCount);
+    });
+
 
     $scope.alerts = [
       {
         icon: 'glyphicon-user',
         colour: 'btn-success',
-        total: '20,408',
+        total: $scope.customersCount.count,
         description: 'TOTAL CUSTOMERS'
       },
       {
@@ -306,7 +324,7 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 
         $scope.changeItem = function(value) {
           if (value !== $scope.ngModel) {
-            if (value === 'divider') value = '';
+          //  if (value === 'divider') value = '';
             $scope.ngModel = value;
             $timeout(function() {
               $scope.ngChange();
@@ -607,11 +625,10 @@ angular.module('core').service('Menus', [
     vm.channels = [
       {
         label: 'Choose Channel',
-        value: ''
+        value: 'no'
       },     
       {
-        label: '',
-        value: 'divider'
+        value: false
       },     
       {
         label: 'Facebook',
@@ -627,44 +644,27 @@ angular.module('core').service('Menus', [
       }
     ];
 
-
-/*
-    vm.pageSides = [
+    vm.filterList = [
       {
-        label: gettext('Front'),
-        value: 'front'
+        label: 'Facebook',
+        value: 'facebook'
       }, 
       {
-        label: gettext('Back'),
-        value: 'back'
+        label: 'Twitter',
+        value: 'twitter'
+      }, 
+      {
+        label: 'Email',
+        value: 'email'
+      },
+      { 
+        value: false
+      }, 
+      { 
+        label: 'Show all',
+        value: 'all'
       }
     ];
-
-
-    vm.trimPageSizes = [
-      { label: gettext('US_Letter 8.5 11 Inch'), 
-        value: {
-          width: units.create(8.5, 'in'),
-          height: units.create(11, 'in')        
-        }
-      },
-      { label: gettext('A4 210 297 mm'), 
-        value: {
-          width: units.create(210, 'mm'),
-          height: units.create(297, 'mm')        
-        }
-      },
-    ];
-
-    vm.pressTypes = [
-      { label: gettext('Sheet-fed'),
-        value: 'sheetFed'
-      },
-      { label: gettext('Fractional Webs'),
-        value: 'web'
-      }      
-    ];
-*/
 
 
     return vm;
@@ -732,6 +732,12 @@ angular.module('customers').run(['Menus',
       state: 'customers.list'
     });
 
+    // Add the dropdown icons list item
+    Menus.addSubMenuItem('topbar', 'customers', {
+      title: 'List Customers (Icons)',
+      state: 'customers.listicon'
+    });
+
     // Add the dropdown create item
     Menus.addSubMenuItem('topbar', 'customers', {
       title: 'Create Customers',
@@ -761,9 +767,18 @@ angular.module('customers').run(['Menus',
         url: '',
         templateUrl: 'modules/customers/client/views/list-customers.client.view.html',
         controller: 'CustomersListController',
-//        controllerAs: 'vm',
+        controllerAs: 'vm',
         data: {
           pageTitle: 'Customers List'
+        }
+      })
+      .state('customers.listicon', {
+        url: '',
+        templateUrl: 'modules/customers/client/views/listicon-customers.client.view.html',
+        controller: 'CustomersListIconController',
+//        controllerAs: 'vm',
+        data: {
+          pageTitle: 'Customers List (Icons)'
         }
       })
       .state('customers.create', {
@@ -850,7 +865,7 @@ angular.module('customers').run(['Menus',
 
     // Create new customer
 //    $scope.create = function (isValid) {
-    $scope.create = function (isValid) {
+    $scope.create = function (isValid, listMode) {
       $scope.error = null;
 
       if($scope.customer._id) {
@@ -879,7 +894,13 @@ angular.module('customers').run(['Menus',
       // Redirect after save
       customer.$save(function (response) {
         Notify.sendMsg('NewCustomer', { 'id': response._id });
-        $state.go('customers.list');
+        if(listMode === 'icon') {
+          $state.go('customers.listicon');
+        }
+        else {
+          $state.go('customers.list');
+        }
+        
 
         $scope.ok();
 //        $location.path('customers/' + response._id);
@@ -929,7 +950,7 @@ angular.module('customers').run(['Menus',
 
       customer.$update(function () {
         $scope.ok();
- //       $state.go('customers.list');
+ //       $state.go('customers.listicon');
 //        $location.path('customers/' + customer._id);
       }, function (errorResponse) {
         $scope.error = errorResponse.data.message;
@@ -959,46 +980,246 @@ angular.module('customers').run(['Menus',
     .module('customers')
     .controller('CustomersListController', CustomersListController);
 
+  CustomersListController.$inject = ['$rootScope', '$scope', 'CustomersService', '$state', 'Presets', 'CustomerModal'];
 
-  CustomersListController.$inject = ['$scope', '$state', 'CustomersService', '$modal', '$log'];
+  function CustomersListController($rootScope, $scope, customers, $state, presets, customerModal){
 
-  function CustomersListController($scope, $state, customers, $modal, $log) {
-//    var vm = this;
+  /*
+    if (DesktopApplication.enabled) {
+      $state.go('customers.desktop');
+      return;
+    }
+  */
+    var vm = this;
 
-    $scope.customers = customers.query();
+    vm.filterList = presets.filterList;
 
-    $scope.modalUpdate = function (selectedCustomer) {
-      var modalInstance = $modal.open({
-        templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
-        controller: ["$scope", "$modalInstance", "customer", function ($scope, $modalInstance, customer) {
-          $scope.customer = customer;
+    vm.filter = 'all';
+    $scope.listMode = 'list';
 
-          $scope.ok = function () {
-            $modalInstance.close($scope.customer);
-   //         $scope.customers.push($scope.customer);
+    vm.modalUpdate = function(selectedCustomer) {
+      var scope = $scope;
+      customerModal.editCustomer(scope, selectedCustomer);
+    };
 
-          };
+    vm.setFilter = function(index){
+      vm.filter = vm.filterList[index].value;
+      vm.searchValue = null;
+      if(vm.filter !== 'all')//channel
+        $scope.tableState.search.predicateObject = { 'channel': vm.filterList[index].value };
+      else
+        $scope.tableState.search.predicateObject = { '$':'' };
+      vm.getPageCustomers();
+    };
+    console.log('vm - ',vm);
 
-          $scope.cancel = function () {
-            $modalInstance.dismiss('cancel');
-          };
-        }],
-        size: 'lg',
-        resolve: {
-          customer: function () {
-            return selectedCustomer;
+    vm.searchValue = null;
+    vm.search = function(){
+      console.log('input - ',vm.searchValue);
+//      if((input === 'text' && vm.searchValue.length === 0) || input === 'button') {
+      vm.filter = 'all';
+      $scope.tableState.search.predicateObject = { '$':vm.searchValue };
+      vm.getPageCustomers();
+ //     }
+    };
+
+    vm.currentItem = 0;
+   // $scope.page = 1;
+    vm.pageSizes = [5,10,25,50];
+
+    vm.setItemsPerPage = function(itemsPage) {
+      vm.itemsPerPage = itemsPage;
+//      localStorageService.set('itemsPerPage',itemsPage);
+      console.debug('itemsPerPage - '+ vm.itemsPerPage);
+    };
+
+    //Local Storage Service
+/*
+    var stgItemsPerPage = localStorageService.get('itemsPerPage');
+    if(stgItemsPerPage > 0)
+      vm.setItemsPerPage(stgItemsPerPage);
+    else
+      vm.setItemsPerPage(vm.pageSizes[0]);    
+*/
+    vm.setItemsPerPage(vm.pageSizes[0]);    
+
+    vm.isLoading = false;
+
+    vm.getPageCustomers = function(tableState) {
+      if (tableState === undefined) {
+        tableState = $scope.tableState;
+      } else {
+        $scope.tableState = tableState;
+      }
+      // Change setting of combobox - Items per Page 
+      if(tableState.pagination.number !== vm.itemsPerPage)
+        tableState.pagination.start = 0;
+
+      tableState.pagination.number = vm.itemsPerPage;
+      vm.setItemsPerPage(vm.itemsPerPage);
+      //console.debug('Call server', tableState);
+      if (tableState === undefined) {
+        console.log('nothing to do');
+        return;
+      }
+      if (vm.isLoading) {
+        console.log('skipping');
+        return;
+      }
+
+      vm.isLoading = true;
+
+      var start = tableState.pagination.start || 0;     // This is NOT the page number, but the index of item in the list that you want to use to display the table.
+      var number = tableState.pagination.number || 10;  // Number of entries showed per page.
+      var sort = JSON.stringify(tableState.sort);
+      var search = JSON.stringify(tableState.search.predicateObject);
+      console.log('Search',JSON.stringify(tableState.search.predicateObject));
+ 
+      var items = customers.query({ start: start, number: number, search: search, sort:sort }, function(data, responseHeaders) {
+        
+        var total = parseInt(responseHeaders('total'));
+        vm.totalCount = total;
+// vm.currentItem = localStorageService.get('currentItem');
+
+        tableState.pagination = {
+          start: start,
+          number: number,
+          numberOfPages: Math.ceil(total / vm.itemsPerPage) //set the number of pages so the pagination can update
+        };
+        if(items) {
+          vm.customers = items;
+          if(vm.currentItem >= items.length) {
+            vm.currentItem = 0;
+          }
+
+          if (items.length > 0) {
+            vm.select(vm.customers[vm.currentItem],vm.currentItem);
           }
         }
-      });
-
-      modalInstance.result.then(function (selectedItem) {
-        $scope.selected = selectedItem;}, function () {
-        $log.info('Modal dismissed at: ' + new Date());
+        
+        vm.isLoading = false;
+        
+        console.log('tableState', $scope.tableState);
+        console.log('done loading');
       });
     };
 
+    vm.isSelected = function(customer) {
+      return (customer._id === $state.params.customerId);
+    };
+
+    vm.select = function(customer, index) {
+      if(customer) {
+        vm.currentItem = index;
+ //       localStorageService.set('currentItem',index);
+   //     $state.go('customers.list.view', { customerId: customer._id });
+      }
+    };
+
+    vm.edit = function(customer, index, $event) {
+      console.log('edit ', customer._id);
+      //console.log($event);
+      vm.currentItem = index;
+//      localStorageService.set('currentItem',index);
+      $state.go('customers.edit', { customerId: customer._id });
+      $event.stopImmediatePropagation();
+    };
+
+
+    vm.delete = function(customer) {
+ 
+      var title = 'Delete Template';
+      var mes = 'Do you wish to delete the customer?';
+
+//      var dlg = dialogs.confirm(title, mes,
+//        {
+//          yesLabel: 'Delete',
+//          noLabel: 'Cancel'
+//        });
+//      dlg.result.then(function(/*reason*/) {
+/*        if (customer) {
+          var i;
+          for (i in vm.customers) {
+            if (vm.customers[i] === customer) {
+              vm.customers.splice(i, 1);
+              customers.remove(template._id);
+              if(i >= vm.customers.length)
+                i--; 
+              break;
+            }
+          }
+          if(vm.customers.length > 0) {
+            $state.go('customers.list.view', {
+              customersId: vm.customers[i]._id
+            });
+          }
+        }
+      });*/
+    };
+
+    // Diagnostics...
+
+    $rootScope.$on('$stateChangeStart',
+    function(event, toState, toParams, fromState, fromParams){
+      console.log('state change success', toState.name);
+    });
+
+    $rootScope.$on('$stateChangeError',
+    function(event, toState, toParams, fromState, fromParams, error){
+      console.log('state change error', toState.name, error);
+    });
+
+    // somewhere else
+    $scope.$on('$stateNotFound',
+    function(event, unfoundState, fromState, fromParams){
+      console.log(unfoundState.to); // "lazy.state"
+      console.log(unfoundState.toParams); // {a:1, b:2}
+      console.log(unfoundState.options); // {inherit:false} + default options
+    });
+  }
+
+  angular.module('customers').filter('statusFilter',
+    ["$filter", function($filter) {
+      return function(input, predicate) {
+        var strict = true;
+        if (predicate) { // some conditional if I want strict
+          strict = true;
+        }
+        strict = false;
+        return $filter('filter')(input, predicate, strict);
+      };
+    }]
+  );
+
+})();
+
+(function () {
+  'use strict';
+
+  angular
+    .module('customers')
+    .controller('CustomersListIconController', CustomersListIconController);
+
+
+  CustomersListIconController.$inject = ['$scope', '$state', 'CustomersService', '$uibModal', '$log', 'CustomerModal'];
+
+  function CustomersListIconController($scope, $state, customers, $modal, $log, customerModal) {
+//    var vm = this;
+
+    $scope.customers = customers.query();
+    $scope.listMode = 'icon';
+
+    $scope.modalUpdate = function(selectedCustomer) {
+      var scope = $scope;
+      customerModal.editCustomer(scope, selectedCustomer);
+    };
+
+
+    
+    
+/*
 	  // Find a list of customer
- /*   $scope.find = function () {
+    $scope.find = function () {
       $scope.customers = customers.query();
       console.log('customers -', $scope.customers);
     };
@@ -1023,11 +1244,62 @@ angular
   };
 }]);
 
+(function () {
+  'use strict';
+
+  angular
+    .module('customers')
+    .service('CustomerModal', CustomerModalServise);
+
+  CustomerModalServise.$inject = ['$uibModal'];
+
+  function CustomerModalServise($modal) {
+    var vm = this;
+
+    vm.editCustomer = function($scope, selectedCustomer) {
+   
+      var modalInstance = $modal.open({
+ 
+        templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
+        controller: ["$scope", "$modalInstance", "customer", function ($scope, $modalInstance, customer) {
+          $scope.customer = customer;
+
+          $scope.ok = function () {
+            $modalInstance.close($scope.customer);
+   //         $scope.customers.push($scope.customer);
+
+          };
+
+          $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+          };
+        }],
+        size: 'lg',
+        resolve: {
+          customer: function () {
+            return selectedCustomer;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (selectedItem) {
+        $scope.selected = selectedItem;}, function () {
+ //       $log.info('Modal dismissed at: ' + new Date());
+      });
+    };
+  
+
+
+  }
+})();
+
 // Customers service used to communicate Customers REST endpoints
 (function () {
   'use strict';
 
-  angular.module('customers').factory('CustomersService', CustomersService);
+  angular.module('customers')
+    .factory('CustomersService', CustomersService);
+
 
   CustomersService.$inject = ['$resource'];
 
@@ -1037,11 +1309,32 @@ angular
     }, {
       update: {
         method: 'PUT'
+      },
+      countCustomers: {
+        method: 'GET',
+        url: '/api/customers/custCount',
+        isArray: false
+      },
+      query: {
+        method: 'GET',
+        url: 'api/customers?start=:start&number=:number&search=:search&sort=:sort&group&show',
+        params: {
+          start: '@start', 
+          number: '@number',
+          search: '@search',
+          sort: '@sort'
+        },
+        isArray: true
       }
+      
     });
+
+
   }
 
 }());
+
+
 
 // Customers service used to communicate Customers REST endpoints
 (function () {
