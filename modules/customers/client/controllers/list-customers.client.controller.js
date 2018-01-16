@@ -5,9 +5,9 @@
     .module('customers')
     .controller('CustomersListController', CustomersListController);
 
-  CustomersListController.$inject = ['$rootScope', '$scope', 'CustomersService', '$state', 'Presets'];
+  CustomersListController.$inject = ['$rootScope', '$scope', 'CustomersService', '$state', 'Presets', 'CustomerModal'];
 
-  function CustomersListController($rootScope, $scope, customers, $state, presets){
+  function CustomersListController($rootScope, $scope, customers, $state, presets, customerModal){
 
   /*
     if (DesktopApplication.enabled) {
@@ -20,6 +20,11 @@
     vm.filterList = presets.filterList;
 
     vm.filter = 'all';
+
+    vm.modalUpdate = function(selectedCustomer) {
+      var scope = $scope;
+      customerModal.editCustomer(scope, selectedCustomer);
+    };
 
     vm.setFilter = function(index){
       vm.filter = vm.filterList[index].value;

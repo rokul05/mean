@@ -6,7 +6,7 @@
   <div id="customers-list" class="col-xs-6 col-sm-4 col-md-4">
     <div>
       <div class="input-group">
-        <a class="btn white-color btn-primary pull-right" data-ui-sref="customers.create" ui-sref-active="hide" title="{{'Create a new customer'}}"><span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;<span>Add</span></a>
+        <a class="btn white-color btn-primary pull-right" ng-click="vm.modalUpdate()" ui-sref-active="hide" title="{{'Create a new customer'}}"><span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;<span>Add</span></a>
 
         <div class="input-group-btn input-group-btn-custom" uib-dropdown>
           <button type="button" class="btn filter-button dropdown-toggle" uib-dropdown-toggle>
@@ -40,7 +40,7 @@
                     <h4 class="special thumbnail-heading-custom" data-toggle="collapse" data-target="#card1">{{customer.firstName}} {{customer.surname}}<span class="caret"></span></h4>
                   </div>
                   <div class="pull-right thumbnail-button-custom">
-                    <button type="button" class="btn btn-xs white-color" title="{{'Edit the customer'}}" ng-click="vm.edit(customer,$index,$event)" ng-class="{'btn-primary': !vm.isSelected(customer),'btn-default': vm.isSelected(customer),}"><span class="glyphicon glyphicon-pencil"></span></button>
+                    <button type="button" class="btn btn-xs white-color" title="{{'Edit the customer'}}" ng-click="vm.modalUpdate(customer)" ng-class="{'btn-primary': !vm.isSelected(customer),'btn-default': vm.isSelected(customer),}"><span class="glyphicon glyphicon-pencil"></span></button>
                     <button type="button" class="btn btn-xs white-color" title="{{'Duplicate the customer'}}" ng-click="vm.duplicate(customer)" ng-class="{'btn-primary': !vm.isSelected(customer),'btn-default': vm.isSelected(customer),}"><span class="glyphicon glyphicon-file"></span></button>
                     <button type="button" class="btn btn-xs white-color" title="{{'Delete the customer'}}" ng-click="vm.delete(customer, $event)" ng-class="{'btn-primary': !vm.isSelected(customer),'btn-default': vm.isSelected(customer),}"><span class="glyphicon glyphicon-trash"></span></button>
                   </div>
