@@ -34,15 +34,17 @@
       })
       .state('customers.create', {
         url: '/create',
-        templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
-        controller: 'CustomersController',
-//        controllerAs: 'vm',
+        templateUrl: 'modules/customers/client/views/list-customers.client.view.html',
+        controller: 'CustomersListController',
+//        templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
+//        controller: 'CustomersController',
+        controllerAs: 'vm',
         resolve: {
           customerResolve: newCustomer
         },
         data: {
           roles: ['user', 'admin'],
-          pageTitle: 'Customers Create'
+          pageTitle: 'Customer Create'
         }
       })
       .state('customers.edit', {

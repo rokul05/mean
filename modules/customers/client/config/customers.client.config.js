@@ -14,18 +14,20 @@ angular.module('customers').run(['Menus',
     // Add the dropdown list item
     Menus.addSubMenuItem('topbar', 'customers', {
       title: 'List Customers',
-      state: 'customers.list'
+      state: 'customers.list',
+      roles: ['*']
     });
 
     // Add the dropdown icons list item
     Menus.addSubMenuItem('topbar', 'customers', {
       title: 'List Customers (Icons)',
-      state: 'customers.listicon'
+      state: 'customers.listicon',
+      roles: ['*']
     });
 
     // Add the dropdown create item
     Menus.addSubMenuItem('topbar', 'customers', {
-      title: 'Create Customers',
+      title: 'Create Customer',
       state: 'customers.create',
       roles: ['user']
     });

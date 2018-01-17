@@ -5,9 +5,9 @@
     .module('customers')
     .controller('CustomersListController', CustomersListController);
 
-  CustomersListController.$inject = ['$rootScope', '$scope', 'CustomersService', '$state', 'Presets', 'CustomerModal'];
+  CustomersListController.$inject = ['$rootScope', '$scope', 'CustomersService', '$state', 'Presets', 'CustomerModal', 'dialogs', 'Menus'];
 
-  function CustomersListController($rootScope, $scope, customers, $state, presets, customerModal){
+  function CustomersListController($rootScope, $scope, customers, $state, presets, customerModal, dialogs, menus){
 
   /*
     if (DesktopApplication.enabled) {
@@ -24,8 +24,15 @@
 
     vm.modalUpdate = function(selectedCustomer) {
       var scope = $scope;
-      customerModal.editCustomer(scope, selectedCustomer);
+      customerModal.editCustomer(scope, selectedCustomer); 
     };
+
+    if($state.current.name === 'customers.create') {
+      vm.modalUpdate();
+      $state.go('customers.list');
+      menus.removeSubMenuItem('topbar', 'customers.create');
+ //     console.log('menu - ', menus.getMenu('topbar'));
+    }
 
     vm.setFilter = function(index){
       vm.filter = vm.filterList[index].value;
@@ -36,7 +43,8 @@
         $scope.tableState.search.predicateObject = { '$':'' };
       vm.getPageCustomers();
     };
-    console.log('vm - ',vm);
+    console.log('state - ',$state.current.name);
+
 
     vm.searchValue = null;
     vm.search = function(){
@@ -156,30 +164,45 @@
       var title = 'Delete Template';
       var mes = 'Do you wish to delete the customer?';
 
-//      var dlg = dialogs.confirm(title, mes,
-//        {
-//          yesLabel: 'Delete',
-//          noLabel: 'Cancel'
-//        });
-//      dlg.result.then(function(/*reason*/) {
-/*        if (customer) {
+      var dlg = dialogs.confirm(title, mes,
+        {
+          yesLabel: 'Delete',
+          noLabel: 'Cancel'
+        });
+      dlg.result.then(function(/*reason*/) {
+
+        if (customer) {
+          customer.$remove();
+          for (var i in vm.customers) {
+            if (vm.customers[i] === customer) {
+              vm.customers.splice(i, 1);
+              break;
+            }
+          }
+        } else {
+          vm.customer.$remove(function () {
+            $state.go('customers.list');
+          });
+        }        
+  /*      if (customer) {
           var i;
           for (i in vm.customers) {
             if (vm.customers[i] === customer) {
               vm.customers.splice(i, 1);
-              customers.remove(template._id);
+              customer.$remove();
               if(i >= vm.customers.length)
                 i--; 
               break;
             }
           }
           if(vm.customers.length > 0) {
-            $state.go('customers.list.view', {
-              customersId: vm.customers[i]._id
+//            $state.go('customers.list.view', {
+            $state.go('customers.list', {
+        //      customersId: vm.customers[i]._id
             });
           }
-        }
-      });*/
+        }*/
+      });
     };
 
     // Diagnostics...

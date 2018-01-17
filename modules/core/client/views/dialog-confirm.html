@@ -1,0 +1,13 @@
+<div class="modal-header dialog-header-confirm">
+  <button type="button" class="close" ng-click="controller.no()">&times;</button>
+  <h4 class="modal-title">
+    <span class="{{icon}}"></span> {{header}}
+  </h4>
+</div>
+<div class="modal-body">{{msg}}</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" ng-click="controller.yes()" ng-if="yesVisible">{{yesLabel}}</button>
+  <button type="button" class="btn btn-default" ng-click="controller.no()" ng-if="noVisible">{{noLabel}}</button>
+  <button type="button" class="btn btn-default" ng-click="controller.yes()" ng-if="okVisible">{{okLabel}}</button>
+  <button type="button" class="btn btn-default" ng-click="controller.cancel()" ng-if="cancelVisible">{{cancelLabel}}</button>
+</div>

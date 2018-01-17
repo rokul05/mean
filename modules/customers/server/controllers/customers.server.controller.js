@@ -88,7 +88,7 @@ exports.update = function(req, res) {
  */
 exports.delete = function(req, res) {
   var customer = req.customer;
-
+  console.log('delete ', customer);  
   customer.remove(function(err) {
     if (err) {
       return res.status(400).send({
