@@ -24,8 +24,16 @@
 
     vm.modalUpdate = function(selectedCustomer) {
       var scope = $scope;
-      customerModal.editCustomer(scope, selectedCustomer); 
+      var dlgCust = customerModal.editCustomer(scope, selectedCustomer);
+      dlgCust.result.then(function() {
+        //if(selectedCustomer === false) 
+        console.log('customer');
+        vm.getPageCustomers();
+        //return res;
+      });
+      
     };
+
 
     if($state.current.name === 'customers.create') {
       vm.modalUpdate();
