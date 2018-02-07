@@ -51,7 +51,7 @@
         url: '/:customerId/edit',
         templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
         controller: 'CustomersController',
-//        controllerAs: 'vm',
+        controllerAs: 'vm',
         resolve: {
           customerResolve: getCustomer
         },
@@ -64,7 +64,7 @@
         url: '/:customerId',
         templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
         controller: 'CustomersController',
-//        controllerAs: 'vm',
+        controllerAs: 'vm',
         resolve: {
           customerResolve: getCustomer
         },

@@ -10,6 +10,10 @@ module.exports = {
       ],
       js: [
         'public/lib/angular/angular.js',
+        'public/lib/react/react.js',
+        'public/lib/react-dom/react-dom.js',
+        'public/lib/react-bootstrap/dist/react-bootstrap.js',
+        'public/lib/ngreact/ngReact.js',
         'public/lib/angular-resource/angular-resource.js',
         'public/lib/angular-animate/angular-animate.js',
         'public/lib/angular-messages/angular-messages.js',
@@ -20,7 +24,6 @@ module.exports = {
         'public/lib/angular-file-upload/angular-file-upload.js',
         'public/lib/owasp-password-strength-test/owasp-password-strength-test.js',
         'public/lib/angular-bootstrap-toggle/dist/angular-bootstrap-toggle.js'
-
       ],
       tests: ['public/lib/angular-mocks/angular-mocks.js']
     },

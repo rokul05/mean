@@ -21,7 +21,9 @@
   </div>
   </br>
   </br>
-  <customer-list></customer-list>
+  <ut-customer-view customer="vm.customer" zoom-ratio="vm.zoomRatio.current" on-click-icon="onClickIcon">
+    <customer-list></customer-list>
+  </ut-customer-view>
 </section>
 
 <pre class="col-xs-10 col-xs-offset=1">{{customers | json }}</pre>

@@ -9,6 +9,8 @@
   CustomersService.$inject = ['$resource'];
 
   function CustomersService($resource) {
+
+    
     return $resource('api/customers/:customerId', {
       customerId: '@_id'
     }, {
@@ -31,12 +33,8 @@
         },
         isArray: true
       }
-      
     });
-
-
   }
 
 }());
-
 

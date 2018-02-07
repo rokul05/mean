@@ -54,6 +54,11 @@ var CustomerSchema = new Schema({
     default: '',
     trim: true
   },
+  image: {
+    type: String,
+    default: '',
+    trim: true
+  },
   created: {
     type: Date,
     default: Date.now
@@ -63,5 +68,12 @@ var CustomerSchema = new Schema({
     ref: 'User'
   }
 });
+
+
+//CustomerSchema.pre('save', function(next) {
+ // this.image.data = '';
+ // console.log('PRESAVE', this);
+//  next();
+//});
 
 mongoose.model('Customer', CustomerSchema);

@@ -4,12 +4,13 @@
  * Module dependencies.
  */
 var path = require('path'),
+  fs = require('fs'),
+  multer = require('multer'),
   mongoose = require('mongoose'),
   Customer = mongoose.model('Customer'),
   async = require('async'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   _ = require('lodash');
-
 
 
 /**
@@ -25,6 +26,7 @@ exports.custCount = function(req, res) {
       var data = {};
       data.count = customerCount;
       res.jsonp(data);
+//      console.log('custCount',res.jsonp(data));
     }
   });
 };
@@ -71,7 +73,6 @@ exports.update = function(req, res) {
   var customer = req.customer;
 
   customer = _.extend(customer, req.body);
-
   customer.save(function(err) {
     if (err) {
       return res.status(400).send({
@@ -232,5 +233,37 @@ exports.customerByID = function(req, res, next, id) {
     }
     req.customer = customer;
     next();
+  });
+};
+
+var storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, './modules/customers/client/img/');
+  },
+  filename: function(req, file, cb) {
+    cb(null, file.originalname);
+//    cb(null, Date.now() + '_' + file.originalname);
+  }
+});
+
+var upload = multer({
+  storage: storage,
+  limit: { fileSize: 300000000 }
+}).single('myImage');
+
+exports.saveFile = function(req, res) {
+  upload(req, res, function (err) {
+    var file = req.file;
+    console.log('saveFile PARAM', req.file);
+    if (err) {
+      return res.status(500).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      res.json({ 
+        'success': true,
+        'file': file
+      });
+    }
   });
 };

@@ -6,23 +6,47 @@
     .module('customers')
     .controller('CustomersController', CustomersController);
 
-  CustomersController.$inject = ['$scope', '$state', '$stateParams', '$location', 'Authentication', 'CustomersService', 'Notify', 'Presets'];
+  CustomersController.$inject = ['$scope', '$state', '$stateParams', '$location', 'Authentication', 'CustomersService', 'Notify', 'Presets', 'UploadFileService'];
 
-  function CustomersController ($scope, $state, $stateParams, $location, Authentication, Customers, Notify, presets) {
+  function CustomersController ($scope, $state, $stateParams, $location, Authentication, Customers, Notify, presets, upload) {
 
-    //var vm = this;
-//    vm.customer = {};
-//    vm.customer.firstName = 'sdfsd';
+    var vm = this;
+    vm.customer = {};
+    $scope.file = {};
     $scope.authentication = Authentication;
     $scope.customers = Customers.query();
+//    $scope.image = '/modules/customers/client/img/bohdan.jpg';
+    $scope.image = $scope.customer.image;
     $scope.presets = presets;
 
-    
     $scope.changeChannel = function(){
 
     };
 
+/*
+    $scope.customersCount = Customers.countCustomers(function(data) {
+      $scope.customersCount = data;
+      console.log('Virtual customers ', $scope.customersCount);
+    });*/
+/*
+    $scope.selectFile = function() {
+      var fileTypes = [
+        'image/jpeg',
+        'image/pjpeg',
+        'image/png'];
+      fileDialog.selectFile(function(file) {
+ //       vm.customer.image = file;
+        $scope.image = file;
+        $scope.contentType = 'image/jpeg';
+        console.log('selected file:', file);
+        if($scope.customer) {
+          $scope.customer.image.data = $scope.image;
+          $scope.customer.image.contentType = $scope.contentType;
+        }
+      }, fileTypes);
+    };
 
+*/
 //    $scope.customers = angular.copy(Customers);
 
     // Create new customer
@@ -44,6 +68,10 @@
       var customer = new Customers({
         firstName: this.customer.firstName,
         surname: this.customer.surname,
+/*        image: { 
+          data: {},
+          contentType: ''
+        },*/
         suburb: this.customer.suburb,
         country: this.customer.country,
         industry: this.customer.industry,
@@ -63,13 +91,13 @@
           $state.go('customers.list');
         }
         
-
         $scope.ok();
 //        $location.path('customers/' + response._id);
 
         // Clear form fields
         $scope.customer.firstName = '';
         $scope.customer.surname = '';
+ //       $scope.customer.image = {};
         $scope.customer.suburb = '';
         $scope.customer.country = '';
         $scope.customer.industry = '';
@@ -102,20 +130,28 @@
     // Update existing customer
     $scope.update = function (isValid) {
       $scope.error = null;
-
       if (!isValid) {
         $scope.$broadcast('show-errors-check-validity', 'customerForm');
         return false;
       }
 
       var customer = $scope.customer;
+      $scope.saveFile = upload.saveImage($scope.file).then(function(data) {
+        console.log('DATA image', data);
+        $scope.customer.image = data.data.file.destination + data.data.file.filename;
+//        var image = data.data.file.destination + data.data.file.filename;
+//        $scope.customer.image = image.substr(1);        
+        $scope.customerSave(customer);
+      });
+    };
 
+    $scope.customerSave = function(customer) {
       customer.$update(function () {
         $scope.ok();
  //       $state.go('customers.listicon');
-//        $location.path('customers/' + customer._id);
       }, function (errorResponse) {
-        $scope.error = errorResponse.data.message;
+        console.log('Error to update customer',customer);
+   //    $scope.error = errorResponse.data.message;
       });
     };
 

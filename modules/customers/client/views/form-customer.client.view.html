@@ -6,14 +6,15 @@
     <form name="customerForm">
       <fieldset>
         <div class="row">
-
           <alert type="danger" ng-show="error" class="text-center text-danger">
             <span ng-bind="error"></span>
           </alert>
-   
+
           <div class="col-sm-6 text-center">
-            <i class="glyphicon glyphicon-user cust-profile" ng-class="{'text-primary':customer.referred, 'text-pink':!customer.referred}"></i>
+            <img ng-if="image" ng-src="{{image}}" style="max-height: 80%; max-width: 80%;"></img>
+            <i ng-hide="image" class="glyphicon glyphicon-user cust-profile" ng-class="{'text-primary':customer.referred, 'text-pink':!customer.referred}"></i>
           </div>
+
           <div class="col-sm-6">
             <div class="form-group" show-errors>
               <label class="control-label" for="firstName">First Name</label>
@@ -42,6 +43,17 @@
               <div ng-messages="customerForm.country.$error" role="alert">
                 <p class="help-block error-text" ng-message="required">Customer Country is required.</p>
               </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <div class="col-sm-5">
+              <label class="btn btn-primary text-center">
+                <input type="file" name="myImage" style="display: none" ut-upload="file.upload">
+                <i class="glyphicon glyphicon-user"></i> 
+                Upload Image
+              </label>
             </div>
           </div>
         </div>
@@ -105,4 +117,5 @@
     <button class="btn btn-warning btn-lg" ng-click="cancel()">Cansel</button>
   </div>
   <pre>{{customers | json }}</pre>
+  <pre>{{customer | json }}</pre>
 </section>

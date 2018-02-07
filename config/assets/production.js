@@ -10,6 +10,10 @@ module.exports = {
       ],
       js: [
         'public/lib/angular/angular.min.js',
+        'public/lib/react/react.min.js',
+        'public/lib/react-dom/react-dom.min.js',
+        'public/lib/react-bootstrap/dist/react-bootstrap.min.js',
+        'public/lib/ngreact/ngReact.min.js',
         'public/lib/angular-resource/angular-resource.min.js',
         'public/lib/angular-animate/angular-animate.min.js',
         'public/lib/angular-messages/angular-messages.min.js',

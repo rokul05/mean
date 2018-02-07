@@ -21,5 +21,10 @@
 }
 
 .pull-left {
-	padding-left: 0px;
+  padding-left: 0px;
+}
+
+.customer-view {
+  position: relative;
+  padding-top: 6px;
 }
