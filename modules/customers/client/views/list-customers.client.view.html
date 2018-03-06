@@ -80,14 +80,16 @@
       </tfoot>
     </table>
   </div>
-  <div class="col-xs-6 col-sm-8 col-md-8" data-ng-show="vm.customers.length > 0">
-    <div data-ui-view="detail" model></div>
+  <div class="col-xs-6 col-sm-8 col-md-8">
+  	<h1>CUSTomer</h1>
+    <ut-hello-component first-name="vm.firstName" on-click="vm.onClick" on-mouse-enter="vm.onMouseEnter" on-mouse-leave="vm.onMouseLeave"></ut-hello-component>
   </div>
 </div>
 <div class="alert alert-warning text-center" data-ng-if="vm.customers.$resolved && !vm.customers.length">
   <span>No customers yet, why don't you&nbsp;</span><a data-ui-sref="customers.create">create one</a>?
 </div>
 
-<pre class="col-xs-10 col-xs-offset=1">{{vm | json }}</pre>
+<pre class="col-xs-10 col-xs-offset=1">{{vm.customer | json }}
+</pre>
 
 

@@ -11,6 +11,9 @@
 .x-ng-cloak {
   display: none !important;
 }
+.error-text {
+  display: none;
+}
 .header-profile-image {
   opacity: 0.8;
   height: 28px;
@@ -25,15 +28,6 @@ a:hover .header-profile-image {
 .user-header-dropdown-toggle {
   padding-top: 11px !important;
   padding-bottom: 11px !important;
-}
-.error-text {
-  display: none;
-}
-.has-error .help-block.error-text {
-  display: block;
-}
-.has-error .help-inline.error-text {
-  display: inline;
 }
 
 body {

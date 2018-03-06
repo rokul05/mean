@@ -19,5 +19,19 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', 'Auth
     $scope.$on('$stateChangeSuccess', function () {
       $scope.isCollapsed = false;
     });
+/*
+    $scope.exitApp = function() {
+      DesktopApplication.closeApplication();
+    };
+*/
+    $scope.getMenuTitle = function(item) {
+      var menuText = item.title;
+      var shortcutKeyIndex = menuText.indexOf('\tCtrl');
+      if (shortcutKeyIndex !== -1) {
+        menuText = menuText.substring(0, shortcutKeyIndex);
+      }
+      return menuText;
+    };
+
   }
 ]);

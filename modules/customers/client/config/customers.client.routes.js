@@ -27,7 +27,7 @@
         url: '',
         templateUrl: 'modules/customers/client/views/listicon-customers.client.view.html',
         controller: 'CustomersListIconController',
-//        controllerAs: 'vm',
+        controllerAs: 'vm',
         data: {
           pageTitle: 'Customers List (Icons)'
         }

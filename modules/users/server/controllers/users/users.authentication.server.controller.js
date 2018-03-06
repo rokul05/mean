@@ -7,6 +7,7 @@ var path = require('path'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   mongoose = require('mongoose'),
   passport = require('passport'),
+  defaultAssets = require(path.resolve('./config/assets/default.js')),
   User = mongoose.model('User');
 
 // URLs for which user can't be redirected on signin

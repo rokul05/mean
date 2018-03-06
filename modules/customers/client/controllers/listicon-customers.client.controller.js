@@ -9,9 +9,22 @@
   CustomersListIconController.$inject = ['$scope', '$state', 'CustomersService', '$uibModal', '$log', 'CustomerModal'];
 
   function CustomersListIconController($scope, $state, customers, $modal, $log, customerModal) {
-//    var vm = this;
 
-    $scope.customers = customers.query();
+    var vm = this;
+    vm.customer = {
+      firstName: '',
+      surname: ''
+    }; 
+
+    var result = customers.query(function() {
+      if(result) {
+        vm.customers = result;
+      //  vm.customer = vm.customers[0];
+      }
+    });
+
+
+    
     $scope.listMode = 'icon';
 
     $scope.modalUpdate = function(selectedCustomer) {
@@ -20,6 +33,12 @@
     };
 
 
+    vm.firstName = 'George';
+    vm.state = 'none';
+
+    vm.onClick = function() {
+      vm.firstName = 'Stacy';
+    };
     
     
 /*

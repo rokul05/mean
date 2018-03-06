@@ -14,16 +14,17 @@
     </div>
     <div class="col-xs-12 col-sm-4 text-center">
       <button type="button" class="btn btn-success text-center" ng-click="modalUpdate()">
-        <i class="glyphicon glyphicon-user"></i> </br>
+        <i class="glyphicon glyphicon-user"></i> 
         New customer
       </button>
     </div>
   </div>
-  </br>
-  </br>
-  <ut-customer-view customer="vm.customer" zoom-ratio="vm.zoomRatio.current" on-click-icon="onClickIcon">
-    <customer-list></customer-list>
-  </ut-customer-view>
+  <!--<customer-list></customer-list>-->
+
+  <div ng-repeat="customer in vm.customers">
+    <ut-customer-detail customer="customer" on-click="vm.onClick"></ut-customer-detail>
+  </div>
+
 </section>
 
-<pre class="col-xs-10 col-xs-offset=1">{{customers | json }}</pre>
+<!--<pre class="col-xs-10 col-xs-offset=1">{{vm.customers | json }}</pre>-->

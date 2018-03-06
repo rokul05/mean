@@ -5,27 +5,29 @@ module.exports = {
     lib: {
       css: [
         'public/lib/bootstrap/dist/css/bootstrap.css',
-        'public/lib/bootstrap/dist/css/bootstrap-theme.css',
-        'public/lib/angular-bootstrap-toggle/dist/angular-bootstrap-toggle.css'
+        'public/lib/angular-bootstrap-toggle/dist/angular-bootstrap-toggle.min.css'
       ],
       js: [
+        'public/lib/jquery/dist/jquery.min.js',
         'public/lib/angular/angular.js',
         'public/lib/react/react.js',
-        'public/lib/react-dom/react-dom.js',
-        'public/lib/react-bootstrap/dist/react-bootstrap.js',
+        'public/lib/react/react-dom.js',
         'public/lib/ngreact/ngReact.js',
+        'public/lib/react-bootstrap/react-bootstrap.js',
         'public/lib/angular-resource/angular-resource.js',
         'public/lib/angular-animate/angular-animate.js',
         'public/lib/angular-messages/angular-messages.js',
         'public/lib/angular-ui-router/release/angular-ui-router.js',
         'public/lib/angular-ui-utils/ui-utils.js',
-        'public/lib/angular-smart-table/dist/smart-table.js',
         'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
-        'public/lib/angular-file-upload/angular-file-upload.js',
         'public/lib/owasp-password-strength-test/owasp-password-strength-test.js',
-        'public/lib/angular-bootstrap-toggle/dist/angular-bootstrap-toggle.js'
-      ],
-      tests: ['public/lib/angular-mocks/angular-mocks.js']
+        'public/lib/angular-smart-table/dist/smart-table.min.js',
+        'public/lib/jquery.uniform/dist/jquery.uniform.min.js',
+        'public/lib/lodash/dist/lodash.min.js',
+        'public/lib/angular-bootstrap-toggle/dist/angular-bootstrap-toggle.js',
+        'public/lib/classnames/index.js'
+      ]//,
+//      tests: ['public/lib/angular-mocks/angular-mocks.js']
     },
     css: [
       'modules/*/client/css/*.css'
@@ -43,7 +45,7 @@ module.exports = {
       'modules/*/client/**/*.js'
     ],
     views: ['modules/*/client/views/**/*.html'],
-    templates: ['build/templates.js']
+    templates: ['public/build/templates/**/*.js']
   },
   server: {
     gruntConfig: 'gruntfile.js',

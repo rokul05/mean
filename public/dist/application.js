@@ -13,7 +13,8 @@ var ApplicationConfiguration = (function () {
     'ui.utils',
     'smart-table',
     'angularFileUpload',
-    'ui.toggle'
+    'ui.toggle',
+    'react'
   ];
 
   // Add a new vertical module
@@ -208,6 +209,66 @@ angular.module('core').config(['$stateProvider', '$urlRouterProvider',
 
 'use strict';
 
+var DialogsController = function($scope, $modalInstance, $timeout, data/*, utils, gettext*/) {
+  this.modalInstance_ = $modalInstance;
+  this.scope_ = $scope;
+  this.$timeout = $timeout;
+  //this.utils = utils;
+
+  $scope.header = (angular.isDefined(data.header)) ? data.header : ''; // $translate.instant('DIALOGS_CONFIRMATION');
+  $scope.msg = (angular.isDefined(data.msg)) ? data.msg : ''; // $translate.instant('DIALOGS_CONFIRMATION_MSG');
+  $scope.icon = '';
+    // $scope.icon = (angular.isDefined(data.fa) && angular.equals(data.fa,true)) ? 'fa fa-check' : 'glyphicon glyphicon-check';
+  $scope.okVisible = angular.isDefined(data.okVisible) ? data.okVisible : false;
+  $scope.cancelVisible = angular.isDefined(data.cancelVisible) ? data.cancelVisible : false;
+  $scope.yesVisible = angular.isDefined(data.yesVisible) ? data.yesVisible : true;
+  $scope.noVisible = angular.isDefined(data.noVisible) ? data.noVisible : true;
+  $scope.yesLabel = angular.isDefined(data.yesLabel) ? data.yesLabel : 'Yes';
+  $scope.noLabel = angular.isDefined(data.noLabel) ? data.noLabel : 'No';
+  $scope.cancelLabel = angular.isDefined(data.cancelLabel) ? data.cancelLabel : 'Cancel';
+  $scope.okLabel = angular.isDefined(data.cancelLabel) ? data.cancelLabel : 'Ok';
+/*
+  $scope.yesLabel = angular.isDefined(data.yesLabel) ? data.yesLabel : gettext('Yes');
+  $scope.noLabel = angular.isDefined(data.noLabel) ? data.noLabel : gettext('No');
+  $scope.cancelLabel = angular.isDefined(data.cancelLabel) ? data.cancelLabel : gettext('Cancel');
+  $scope.okLabel = angular.isDefined(data.cancelLabel) ? data.cancelLabel : gettext('Ok');
+*/
+};
+
+DialogsController.prototype.yes = function()
+{
+  this.modalInstance_.close('yes');
+ // this.utils.cleanupModals();
+};
+DialogsController.prototype.no = function()
+{
+  this.modalInstance_.dismiss('no');
+ // this.utils.cleanupModals();
+};        
+DialogsController.prototype.cancel = function()
+{
+  this.modalInstance_.dismiss('cancel');
+ // this.utils.cleanupModals();
+};
+
+/* Controller injected in generic dialogs */
+angular.module('core').controller('DialogsController', ['$scope', '$uibModalInstance', '$timeout', 'data'/*, 'utils', 'gettext'*/,
+    DialogsController]);
+
+'use strict';
+
+angular.module('core').controller('FooterController', ['$scope',
+  function ($scope) {
+
+ //   console.debug(environment);
+    // Expose view variables
+//    $scope.appVersion = environment.appVersion;
+    $scope.appVersion = '1';
+  }
+]);
+
+'use strict';
+
 angular.module('core').controller('HeaderController', ['$scope', '$state', 'Authentication', 'Menus',
   function ($scope, $state, Authentication, Menus) {
     // Expose view variables
@@ -338,6 +399,34 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 })();
 'use strict';
 
+angular.module('core').directive('utUpload', ['$parse',
+  function($parse) {
+    return {
+      restrict: 'A',
+      link: function($scope, element, attrs) {
+        var parsedFile = $parse(attrs.utUpload);
+        var parsedFileSetter = parsedFile.assign;
+        var reader = new FileReader();
+        reader.onload = function (e) {
+          $scope.image = e.target.result;
+          $scope.$apply();
+          console.log('image src', $scope.image);
+        };
+
+        element.on('change', function() {
+          reader.readAsDataURL(element[0].files[0]);
+          $scope.$apply(function() {
+            parsedFileSetter($scope, element[0].files[0]);
+          });
+
+        });
+
+      }
+    };
+
+  }]);
+'use strict';
+
 /**
  * Edits by Ryan Hutchison
  * Credit: https://github.com/paulyoder/angular-bootstrap-show-errors */
@@ -410,6 +499,225 @@ angular.module('core')
       }
     };
   }]);
+
+'use strict';
+
+DesktopApplicationService.$inject = ['$rootScope', '$http', '$state', 'desktopMode'];
+function DesktopApplicationService($rootScope, $http, $state, desktopMode) {
+  this.enabled = desktopMode;
+
+  if (this.enabled) {
+    document.body.addClass('desktop');
+  }
+
+  this.closeApplication = function() {
+    if (this.enabled) {
+      // Get the current window
+      var win = require('nw.gui').Window.get();
+      win.close();
+    }
+    else {
+      console.error('closeApplication() function only available in desktop mode.');
+    }
+  }.bind(this);
+
+  this.openFileFromDisk = function(callback) {
+    console.debug('# Open from disk');
+    var chooser = '#_header_openfile_dialog';
+    chooser.unbind('change');
+    chooser.val('');
+    chooser.change(function(evt) {
+      var filepath = this.val();
+      $rootScope.$apply(function() {
+        if (callback) {
+          callback(filepath);
+        }
+      });
+    });
+
+    chooser.trigger('click');  
+  // 
+
+  }.bind(this);
+
+  this.saveFileToDisk = function(callback) {
+    var chooser = '#_header_savefile_dialog';
+    chooser.unbind('change');
+    chooser.val('');
+    chooser.change(function(evt) {
+      var filepath = this.val();
+      $rootScope.$apply(function() {
+        if (callback) {
+          callback(filepath);
+        }
+      });
+    });
+
+    chooser.trigger('click');  
+
+  }.bind(this);
+
+  this.commandLineParameters = function() {
+    if (!this.enabled) {
+      return null;
+    }
+
+    return require('nw.gui').App.argv;
+  }.bind(this);
+
+  this.validate = function() {
+    var commandLine = this.commandLineParameters;
+    return $http.post('/api/auth/desktop');
+  };
+}
+
+angular.module('core')
+  .service('DesktopApplication', DesktopApplicationService);
+
+'use strict';
+
+var DialogsService = function($uibModal, $log, $q/*, gettext*/) {
+  this._uibModal = $uibModal;
+  this._log = $log;
+  this._q = $q;
+
+  this._b = true; // backdrop
+  this._k = true; // keyboard
+  this._w = 'dialogs-default'; // windowClass
+  this._bdc = 'dialogs-backdrop-default'; // backdropClass
+  this._copy = true; // controls use of angular.copy
+  this._wTmpl = null; // window template
+  this._wSize = ''; // medium modal window default
+  this._animation = true; // true/false to use animation
+  this._fa = false; // fontawesome flag
+  this._cancelVisible = false; // Show cancel button
+  //this.gettext_ = gettext;
+};
+
+DialogsService.prototype._setOpts = function(opts) {
+  var _opts = {};
+  opts = opts || {};
+  _opts.kb = (angular.isDefined(opts.keyboard)) ? !!opts.keyboard : this._k; // values: true,false
+  _opts.bd = (angular.isDefined(opts.backdrop)) ? opts.backdrop : this._b; // values: 'static',true,false
+  _opts.bdc = (angular.isDefined(opts.backdropClass)) ? opts.backdropClass : this._bdc; // additional CSS class(es) to be added to the modal backdrop
+  _opts.ws = (angular.isDefined(opts.size) && ((opts.size === 'sm') || (opts.size === 'lg') || (opts.size === 'md'))) ? opts.size : this._wSize; // values: 'sm', 'lg', 'md'
+  _opts.wc = (angular.isDefined(opts.windowClass)) ? opts.windowClass : this._w; // additional CSS class(es) to be added to a modal window
+  _opts.anim = (angular.isDefined(opts.animation)) ? !!opts.animation : this._animation; // values: true,false
+  _opts.fa = this._fa;
+  _opts.cancelVisible = (angular.isDefined(opts.cancelVisible)) ? !!opts.cancelVisible : this._cancelVisible; // values: true,false
+  _opts.yesLabel = (angular.isDefined(opts.yesLabel)) ? opts.yesLabel : undefined;
+  _opts.noLabel = (angular.isDefined(opts.noLabel)) ? opts.noLabel : undefined;
+  _opts.cancelLabel = (angular.isDefined(opts.cancelLabel)) ? opts.cancelLabel : undefined;
+
+  return _opts;
+}; // end _setOpts
+
+/**
+ * Confirm Dialog
+ *
+ * @param  header   string
+ * @param  msg   string
+ * @param  opts  object
+ */
+DialogsService.prototype.confirm = function(header, msg, opts) {
+  opts = this._setOpts(opts);
+
+  return this._uibModal.open({
+    templateUrl: 'modules/core/client/views/dialog-confirm.html',
+    controller: 'DialogsController',
+    controllerAs: 'controller',
+    backdrop: opts.bd,
+    backdropClass: opts.bdc,
+    keyboard: opts.kb,
+    windowClass: opts.wc,
+    size: opts.ws,
+    animation: opts.anim,
+    resolve:
+    {
+      data : function(){
+        return {
+          header : angular.copy(header),
+          msg : angular.copy(msg),
+          fa : opts.fa, /* use font-awesome */
+          cancelVisible: opts.cancelVisible,
+          yesLabel: opts.yesLabel,
+          noLabel: opts.noLabel,
+          cancelLabel: opts.cancelLabel
+        };
+      }
+    }
+  });
+};
+
+DialogsService.prototype.alert = function(header, msg, opts) {
+  opts = this._setOpts(opts);
+
+  return this._uibModal.open({
+    templateUrl: 'modules/core/client/views/dialog-confirm.html',
+    controller: 'DialogsController',
+    controllerAs: 'controller',
+    backdrop: opts.bd,
+    backdropClass: opts.bdc,
+    keyboard: opts.kb,
+    windowClass: opts.wc,
+    size: opts.ws,
+    animation: opts.anim,
+    resolve:
+    {
+      data : function(){
+        return {
+          header : angular.copy(header),
+          msg : angular.copy(msg),
+          fa : opts.fa, /* use font-awesome */
+          yesVisible: false,
+          noVisible: false,
+          okVisible: true,
+          cancelVisible: opts.cancelVisible,
+          okLabel: opts.okLabel,
+          cancelLabel: opts.cancelLabel
+        };
+      }
+    }
+  });
+};
+
+/**
+ * Create Custom Dialog
+ *
+ * @param  url   string
+ * @param  controller   string
+ * @param  data   object
+ * @param  opts  object
+ */
+/*
+DialogsService.prototype.create = function(url, controller, controllerAs, data, opts) {
+  var copy = (opts && angular.isDefined(opts.copy)) ? opts.copy : this._copy;
+  opts = this._setOpts(opts);
+
+  return this._uibModal.open({
+    templateUrl : url,
+    controller : controller,
+    controllerAs : controllerAs,
+    keyboard : opts.kb,
+    backdrop : opts.bd,
+    backdropClass: opts.bdc,
+    windowClass: opts.wc,
+    size: opts.ws,
+    animation: opts.anim,
+    resolve : {
+      data : function() {
+        if(copy)
+          return angular.copy(data);
+        else
+          return data;
+      }
+    }
+  }); // end modal.open
+};
+*/
+
+angular.module('core')
+  .service('dialogs', ['$uibModal', '$log', '$q', /*'gettext',*/ DialogsService]);
 
 'use strict';
 
@@ -729,18 +1037,20 @@ angular.module('customers').run(['Menus',
     // Add the dropdown list item
     Menus.addSubMenuItem('topbar', 'customers', {
       title: 'List Customers',
-      state: 'customers.list'
+      state: 'customers.list',
+      roles: ['*']
     });
 
     // Add the dropdown icons list item
     Menus.addSubMenuItem('topbar', 'customers', {
       title: 'List Customers (Icons)',
-      state: 'customers.listicon'
+      state: 'customers.listicon',
+      roles: ['*']
     });
 
     // Add the dropdown create item
     Menus.addSubMenuItem('topbar', 'customers', {
-      title: 'Create Customers',
+      title: 'Create Customer',
       state: 'customers.create',
       roles: ['user']
     });
@@ -783,22 +1093,24 @@ angular.module('customers').run(['Menus',
       })
       .state('customers.create', {
         url: '/create',
-        templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
-        controller: 'CustomersController',
-//        controllerAs: 'vm',
+        templateUrl: 'modules/customers/client/views/list-customers.client.view.html',
+        controller: 'CustomersListController',
+//        templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
+//        controller: 'CustomersController',
+        controllerAs: 'vm',
         resolve: {
           customerResolve: newCustomer
         },
         data: {
           roles: ['user', 'admin'],
-          pageTitle: 'Customers Create'
+          pageTitle: 'Customer Create'
         }
       })
       .state('customers.edit', {
         url: '/:customerId/edit',
         templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
         controller: 'CustomersController',
-//        controllerAs: 'vm',
+        controllerAs: 'vm',
         resolve: {
           customerResolve: getCustomer
         },
@@ -811,7 +1123,7 @@ angular.module('customers').run(['Menus',
         url: '/:customerId',
         templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
         controller: 'CustomersController',
-//        controllerAs: 'vm',
+        controllerAs: 'vm',
         resolve: {
           customerResolve: getCustomer
         },
@@ -844,23 +1156,46 @@ angular.module('customers').run(['Menus',
     .module('customers')
     .controller('CustomersController', CustomersController);
 
-  CustomersController.$inject = ['$scope', '$state', '$stateParams', '$location', 'Authentication', 'CustomersService', 'Notify', 'Presets'];
+  CustomersController.$inject = ['$scope', '$state', '$stateParams', '$location', 'Authentication', 'CustomersService', 'Notify', 'Presets', 'UploadFileService'];
 
-  function CustomersController ($scope, $state, $stateParams, $location, Authentication, Customers, Notify, presets) {
+  function CustomersController ($scope, $state, $stateParams, $location, Authentication, Customers, Notify, presets, upload) {
 
-    //var vm = this;
-//    vm.customer = {};
-//    vm.customer.firstName = 'sdfsd';
+    var vm = this;
+    vm.customer = {};
+    $scope.file = {};
     $scope.authentication = Authentication;
     $scope.customers = Customers.query();
+    if($scope.customer) $scope.image = $scope.customer.image;
     $scope.presets = presets;
 
-    
     $scope.changeChannel = function(){
 
     };
 
+/*
+    $scope.customersCount = Customers.countCustomers(function(data) {
+      $scope.customersCount = data;
+      console.log('Virtual customers ', $scope.customersCount);
+    });*/
+/*
+    $scope.selectFile = function() {
+      var fileTypes = [
+        'image/jpeg',
+        'image/pjpeg',
+        'image/png'];
+      fileDialog.selectFile(function(file) {
+ //       vm.customer.image = file;
+        $scope.image = file;
+        $scope.contentType = 'image/jpeg';
+        console.log('selected file:', file);
+        if($scope.customer) {
+          $scope.customer.image.data = $scope.image;
+          $scope.customer.image.contentType = $scope.contentType;
+        }
+      }, fileTypes);
+    };
 
+*/
 //    $scope.customers = angular.copy(Customers);
 
     // Create new customer
@@ -882,6 +1217,10 @@ angular.module('customers').run(['Menus',
       var customer = new Customers({
         firstName: this.customer.firstName,
         surname: this.customer.surname,
+/*        image: { 
+          data: {},
+          contentType: ''
+        },*/
         suburb: this.customer.suburb,
         country: this.customer.country,
         industry: this.customer.industry,
@@ -901,13 +1240,13 @@ angular.module('customers').run(['Menus',
           $state.go('customers.list');
         }
         
-
         $scope.ok();
 //        $location.path('customers/' + response._id);
 
         // Clear form fields
         $scope.customer.firstName = '';
         $scope.customer.surname = '';
+ //       $scope.customer.image = {};
         $scope.customer.suburb = '';
         $scope.customer.country = '';
         $scope.customer.industry = '';
@@ -940,20 +1279,28 @@ angular.module('customers').run(['Menus',
     // Update existing customer
     $scope.update = function (isValid) {
       $scope.error = null;
-
       if (!isValid) {
         $scope.$broadcast('show-errors-check-validity', 'customerForm');
         return false;
       }
 
       var customer = $scope.customer;
+      $scope.saveFile = upload.saveImage($scope.file).then(function(data) {
+        console.log('DATA image', data);
+        $scope.customer.image = data.data.file.destination + data.data.file.filename;
+//        var image = data.data.file.destination + data.data.file.filename;
+//        $scope.customer.image = image.substr(1);        
+        $scope.customerSave(customer);
+      });
+    };
 
+    $scope.customerSave = function(customer) {
       customer.$update(function () {
         $scope.ok();
  //       $state.go('customers.listicon');
-//        $location.path('customers/' + customer._id);
       }, function (errorResponse) {
-        $scope.error = errorResponse.data.message;
+        console.log('Error to update customer',customer);
+   //    $scope.error = errorResponse.data.message;
       });
     };
 
@@ -980,9 +1327,9 @@ angular.module('customers').run(['Menus',
     .module('customers')
     .controller('CustomersListController', CustomersListController);
 
-  CustomersListController.$inject = ['$rootScope', '$scope', 'CustomersService', '$state', 'Presets', 'CustomerModal'];
+  CustomersListController.$inject = ['$rootScope', '$scope', 'CustomersService', '$state', 'Presets', 'CustomerModal', 'dialogs', 'Menus'];
 
-  function CustomersListController($rootScope, $scope, customers, $state, presets, customerModal){
+  function CustomersListController($rootScope, $scope, customers, $state, presets, customerModal, dialogs, menus){
 
   /*
     if (DesktopApplication.enabled) {
@@ -999,8 +1346,23 @@ angular.module('customers').run(['Menus',
 
     vm.modalUpdate = function(selectedCustomer) {
       var scope = $scope;
-      customerModal.editCustomer(scope, selectedCustomer);
+      var dlgCust = customerModal.editCustomer(scope, selectedCustomer);
+      dlgCust.result.then(function() {
+        //if(selectedCustomer === false) 
+        console.log('customer');
+        vm.getPageCustomers();
+        //return res;
+      });
+      
     };
+
+
+    if($state.current.name === 'customers.create') {
+      vm.modalUpdate();
+      $state.go('customers.list');
+      menus.removeSubMenuItem('topbar', 'customers.create');
+ //     console.log('menu - ', menus.getMenu('topbar'));
+    }
 
     vm.setFilter = function(index){
       vm.filter = vm.filterList[index].value;
@@ -1011,7 +1373,8 @@ angular.module('customers').run(['Menus',
         $scope.tableState.search.predicateObject = { '$':'' };
       vm.getPageCustomers();
     };
-    console.log('vm - ',vm);
+    console.log('state - ',$state.current.name);
+
 
     vm.searchValue = null;
     vm.search = function(){
@@ -1111,6 +1474,7 @@ angular.module('customers').run(['Menus',
     vm.select = function(customer, index) {
       if(customer) {
         vm.currentItem = index;
+        vm.customer = customer;
  //       localStorageService.set('currentItem',index);
    //     $state.go('customers.list.view', { customerId: customer._id });
       }
@@ -1131,30 +1495,45 @@ angular.module('customers').run(['Menus',
       var title = 'Delete Template';
       var mes = 'Do you wish to delete the customer?';
 
-//      var dlg = dialogs.confirm(title, mes,
-//        {
-//          yesLabel: 'Delete',
-//          noLabel: 'Cancel'
-//        });
-//      dlg.result.then(function(/*reason*/) {
-/*        if (customer) {
+      var dlg = dialogs.confirm(title, mes,
+        {
+          yesLabel: 'Delete',
+          noLabel: 'Cancel'
+        });
+      dlg.result.then(function(/*reason*/) {
+
+        if (customer) {
+          customer.$remove();
+          for (var i in vm.customers) {
+            if (vm.customers[i] === customer) {
+              vm.customers.splice(i, 1);
+              break;
+            }
+          }
+        } else {
+          vm.customer.$remove(function () {
+            $state.go('customers.list');
+          });
+        }        
+  /*      if (customer) {
           var i;
           for (i in vm.customers) {
             if (vm.customers[i] === customer) {
               vm.customers.splice(i, 1);
-              customers.remove(template._id);
+              customer.$remove();
               if(i >= vm.customers.length)
                 i--; 
               break;
             }
           }
           if(vm.customers.length > 0) {
-            $state.go('customers.list.view', {
-              customersId: vm.customers[i]._id
+//            $state.go('customers.list.view', {
+            $state.go('customers.list', {
+        //      customersId: vm.customers[i]._id
             });
           }
-        }
-      });*/
+        }*/
+      });
     };
 
     // Diagnostics...
@@ -1251,19 +1630,20 @@ angular
     .module('customers')
     .service('CustomerModal', CustomerModalServise);
 
-  CustomerModalServise.$inject = ['$uibModal'];
+  CustomerModalServise.$inject = ['$uibModal', 'CustomersService'];
 
-  function CustomerModalServise($modal) {
+  function CustomerModalServise($modal, Customers) {
     var vm = this;
 
     vm.editCustomer = function($scope, selectedCustomer) {
-   
-      var modalInstance = $modal.open({
+
+
+      return $modal.open({
  
         templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
         controller: ["$scope", "$modalInstance", "customer", function ($scope, $modalInstance, customer) {
           $scope.customer = customer;
-
+    
           $scope.ok = function () {
             $modalInstance.close($scope.customer);
    //         $scope.customers.push($scope.customer);
@@ -1275,6 +1655,33 @@ angular
           };
         }],
         size: 'lg',
+
+        resolve: {
+          customer: function () {
+            return selectedCustomer;
+          }
+        }
+      });
+
+   
+/*      var modalInstance = $modal.open({
+ 
+        templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
+        controller: function ($scope, $modalInstance, customer) {
+          $scope.customer = customer;
+
+          $scope.ok = function () {
+            $modalInstance.close($scope.customer);
+   //         $scope.customers.push($scope.customer);
+
+          };
+
+          $scope.cancel = function () {
+            $modalInstance.dismiss('cancel');
+          };
+        },
+        size: 'lg',
+
         resolve: {
           customer: function () {
             return selectedCustomer;
@@ -1283,9 +1690,13 @@ angular
       });
 
       modalInstance.result.then(function (selectedItem) {
+        //$scope.customers = Customers.query();
+        //console.log('customer', $scope.customers);
         $scope.selected = selectedItem;}, function () {
  //       $log.info('Modal dismissed at: ' + new Date());
       });
+
+      */
     };
   
 
@@ -1304,6 +1715,8 @@ angular
   CustomersService.$inject = ['$resource'];
 
   function CustomersService($resource) {
+
+    
     return $resource('api/customers/:customerId', {
       customerId: '@_id'
     }, {
@@ -1326,14 +1739,10 @@ angular
         },
         isArray: true
       }
-      
     });
-
-
   }
 
 }());
-
 
 
 // Customers service used to communicate Customers REST endpoints
@@ -1363,6 +1772,26 @@ angular
     return notify;
   }
 
+}());
+
+(function () {
+  'use strict';
+
+  angular.module('customers')
+    .service('UploadFileService', UploadFileService);
+
+  UploadFileService.$inject = ['$http'];
+
+  function UploadFileService($http) {
+    this.saveImage = function(file) {
+      var fd = new FormData();
+      fd.append('myImage', file.upload);
+      return $http.post('api/customers/saveFile', fd, {
+        transformRequest: angular.identity,
+        headers: { 'Content-Type': undefined }
+      });
+    };
+  }
 }());
 
 'use strict';

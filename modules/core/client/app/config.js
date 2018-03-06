@@ -12,8 +12,9 @@ var ApplicationConfiguration = (function () {
     'ui.bootstrap',
     'ui.utils',
     'smart-table',
-    'angularFileUpload',
-    'ui.toggle'
+//    'angularFileUpload',
+    'ui.toggle'//,
+//    'react'
   ];
 
   // Add a new vertical module

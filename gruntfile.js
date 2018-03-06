@@ -5,10 +5,15 @@
  */
 var _ = require('lodash'),
   defaultAssets = require('./config/assets/default'),
+  developmentAssets = require('./config/assets/development'),
   testAssets = require('./config/assets/test'),
   testConfig = require('./config/env/test'),
   fs = require('fs'),
-  path = require('path');
+  glob = require('glob'),
+  async = require('async'),
+  path = require('path'),
+  http = require('http'),
+  os = require('os');
 
 module.exports = function (grunt) {
   // Project Configuration
@@ -23,6 +28,16 @@ module.exports = function (grunt) {
       },
       prod: {
         NODE_ENV: 'production'
+      },
+      desktop_dev: {
+        NODE_ENV: 'development',
+        PORT: 33000,
+        DESKTOP_MODE: true
+      },
+      desktop_prod: {
+        NODE_ENV: 'production',
+        PORT: 38443,
+        DESKTOP_MODE: true
       }
     },
     watch: {
@@ -72,6 +87,13 @@ module.exports = function (grunt) {
         options: {
           livereload: true
         }
+      },
+      babel: {
+        files: developmentAssets.client.jsx,
+        tasks: ['babel'],
+        options: {
+          livereload: true
+        }
       }
     },
     nodemon: {
@@ -79,8 +101,8 @@ module.exports = function (grunt) {
         script: 'server.js',
         options: {
           nodeArgs: ['--debug'],
-          ext: 'js,html',
-          watch: _.union(defaultAssets.server.gruntConfig, defaultAssets.server.views, defaultAssets.server.allJS, defaultAssets.server.config)
+          ext: 'js,html,jsx',
+          watch: _.union(defaultAssets.server.gruntConfig, defaultAssets.server.views, defaultAssets.server.allJS, defaultAssets.server.config, developmentAssets.client.jsx)
         }
       }
     },
@@ -117,7 +139,7 @@ module.exports = function (grunt) {
     ngAnnotate: {
       production: {
         files: {
-          'public/dist/application.js': defaultAssets.client.js
+          'public/dist/application.js': _.union(defaultAssets.client.js, defaultAssets.client.templates)
         }
       }
     },
@@ -223,7 +245,22 @@ module.exports = function (grunt) {
           return !fs.existsSync('config/env/local.js');
         }
       }
-    }
+    },
+    babel: {
+      options: {
+        plugins: ['transform-react-jsx'],
+        presets: ['es2015', 'react']
+      },
+      jsx: {
+        files: [{
+          expand: true,
+         // cwd: 'modules/js/jsx/', // Custom folder
+          src: developmentAssets.client.jsx,
+          dest: 'public/build/templates/', // Custom folder
+          ext: '.js'
+        }]
+      }
+    }  
   });
 
   grunt.event.on('coverage', function(lcovFileContents, done) {
@@ -300,7 +337,7 @@ module.exports = function (grunt) {
   grunt.registerTask('lint', ['sass', 'less', 'jshint', 'eslint', 'csslint']);
 
   // Lint project files and minify them into two production files.
-  grunt.registerTask('build', ['env:dev', 'lint', 'ngAnnotate', 'uglify', 'cssmin']);
+  grunt.registerTask('build', ['env:dev', 'lint', 'babel', 'ngAnnotate', 'uglify', 'cssmin']);
 
   // Run the project tests
   grunt.registerTask('test', ['env:test', 'lint', 'mkdir:upload', 'copy:localConfig', 'server', 'mochaTest', 'karma:unit', 'protractor']);
@@ -311,11 +348,12 @@ module.exports = function (grunt) {
   grunt.registerTask('coverage', ['env:test', 'lint', 'mocha_istanbul:coverage', 'karma:unit']);
 
   // Run the project in development mode
-  grunt.registerTask('default', ['env:dev', 'lint', 'mkdir:upload', 'copy:localConfig', 'concurrent:default']);
+  grunt.registerTask('default', ['env:dev', 'lint', 'babel', 'mkdir:upload', 'copy:localConfig', 'concurrent:default']);
 
   // Run the project in debug mode
-  grunt.registerTask('debug', ['env:dev', 'lint', 'mkdir:upload', 'copy:localConfig', 'concurrent:debug']);
+  grunt.registerTask('debug', ['env:dev', 'lint', 'babel', 'mkdir:upload', 'copy:localConfig', 'concurrent:debug']);
 
   // Run the project in production mode
   grunt.registerTask('prod', ['build', 'env:prod', 'mkdir:upload', 'copy:localConfig', 'concurrent:default']);
+  grunt.registerTask('desktop-dev', ['env:desktop_dev', 'lint', 'babel', 'mkdir:upload', 'copy:localConfig', 'concurrent:desktop_dev']);
 };

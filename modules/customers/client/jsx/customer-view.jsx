@@ -1,70 +1,37 @@
-class ReactCustomerView extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+(function() {
+  'use strict';
 
-    };
-  }
+  class HelloComponentReact extends React.Component {
+    render() {
+      var style = {
+        borderStyle :'solid', 
+        borderWidth :'2px', 
+        'margin' : '10px'
+      };
 
-  render() {
-    var customer = this.props.customer;
-
-    if (!customer.containers || customer.containers.length === 0) {
       return (
-        <div className={'customer-view empty'} style={{width: 1, height: 1}}>
+        <div style={style} onClick={this.props.onClick} onMouseEnter={this.props.onMouseEnter} onMouseLeave={this.props.onMouseLeave}>
+        <h1>Hello There, {this.props.firstName}</h1>
         </div>
       );
     }
-
-    var zoomRatio = this.props.zoomRatio || 1;
-    var pixelsPerPoint = 1 * zoomRatio;
-
-    var sheetStyle = {
-      position: 'absolute',
-      left: rulerXOffset,
-      top: 0
-    };
-
-    var layoutStyle = {
-      position: 'absolute',
-      left: rulerXOffset,
-      top: 0
-    };
-
-    var componentClass = {
-      'customer-view' : true
-    };    
-
-    var componentStyle = {
-//      width: this.state.matrix.width + rulerXOffset,
-//      height: this.state.matrix.height + rulerYOffset,
-    };
-
-
-    return (
-      <div className={classNames(componentClass)} style={componentStyle}>
-        <div style={sheetStyle}>
-          <ReactCustomerSheet
-            customer={this.props.customer}>
-            </ReactCustomerSheet>
-        </div>
-      </div>
-    );
   }
-}
 
+  HelloComponentReact.propTypes = {
+    'firstName' : React.PropTypes.string.isRequired,
+    'onClick' : React.PropTypes.func,
+    'onMouseEnter' : React.PropTypes.func,
+    'onMouseLeave' : React.PropTypes.func
+  };
 
-ReactCustomerView.propTypes = {
-  customer: React.PropTypes.object.isRequired,
-  zoomRatio: React.PropTypes.number, // later
-  onClickIcon: React.PropTypes.func
- ;
+  angular.module('customers').value('HelloComponent', HelloComponentReact);
 
-CustomerView.$inject = ['reactDirective', 'Presets'];
-function CustomerView(reactDirective, presets) {
-  return reactDirective(ReactCustomerView, undefined, {}, {
-    presets: presets,
- });
-}
+  'use strict';
 
-angular.module('customers').directive('utCustomerView', CustomerView);
+  HelloComponent.$inject = ['reactDirective'];
+  function HelloComponent(reactDirective) {
+    return reactDirective('HelloComponent');
+  }
+
+  angular.module('customers').directive('utHelloComponent', HelloComponent);
+})();

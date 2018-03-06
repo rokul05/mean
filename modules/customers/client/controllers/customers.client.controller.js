@@ -15,8 +15,7 @@
     $scope.file = {};
     $scope.authentication = Authentication;
     $scope.customers = Customers.query();
-//    $scope.image = '/modules/customers/client/img/bohdan.jpg';
-    $scope.image = $scope.customer.image;
+    if($scope.customer) $scope.image = $scope.customer.image;
     $scope.presets = presets;
 
     $scope.changeChannel = function(){
@@ -64,14 +63,10 @@
         return false;
       }
       // Create new customer object
-
       var customer = new Customers({
         firstName: this.customer.firstName,
         surname: this.customer.surname,
-/*        image: { 
-          data: {},
-          contentType: ''
-        },*/
+        image: '',
         suburb: this.customer.suburb,
         country: this.customer.country,
         industry: this.customer.industry,
@@ -80,7 +75,15 @@
         referred: this.customer.referred,
         channel: this.customer.channel
       });
-      
+
+      $scope.saveFile($scope.file).then(function() {
+        customer.image = $scope.customer.image;
+        $scope.customerSave(customer, listMode);
+      });
+    };
+
+
+    $scope.customerSave = function(customer, listMode) {
       // Redirect after save
       customer.$save(function (response) {
         Notify.sendMsg('NewCustomer', { 'id': response._id });
@@ -93,11 +96,10 @@
         
         $scope.ok();
 //        $location.path('customers/' + response._id);
-
         // Clear form fields
         $scope.customer.firstName = '';
         $scope.customer.surname = '';
- //       $scope.customer.image = {};
+        $scope.customer.image = '';
         $scope.customer.suburb = '';
         $scope.customer.country = '';
         $scope.customer.industry = '';
@@ -105,6 +107,7 @@
         $scope.customer.phone = '';
         $scope.customer.referred = '';
         $scope.customer.channel = '';
+        
       }, function (errorResponse) {
         $scope.error = errorResponse.data.message;
       });
@@ -136,16 +139,21 @@
       }
 
       var customer = $scope.customer;
-      $scope.saveFile = upload.saveImage($scope.file).then(function(data) {
-        console.log('DATA image', data);
-        $scope.customer.image = data.data.file.destination + data.data.file.filename;
-//        var image = data.data.file.destination + data.data.file.filename;
-//        $scope.customer.image = image.substr(1);        
-        $scope.customerSave(customer);
+      $scope.saveFile($scope.file).then(function() {
+        $scope.customerUpdate(customer);
       });
     };
 
-    $scope.customerSave = function(customer) {
+    $scope.saveFile = function(file, result) {
+      return (
+        upload.saveImage(file).then(function(data, result) {
+          if(data.data.file) {
+            $scope.customer.image = data.data.file.destination + data.data.file.filename;
+          } 
+        }));      
+    };
+
+    $scope.customerUpdate = function(customer) {
       customer.$update(function () {
         $scope.ok();
  //       $state.go('customers.listicon');

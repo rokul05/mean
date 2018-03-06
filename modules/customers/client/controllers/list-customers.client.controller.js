@@ -15,8 +15,30 @@
       return;
     }
   */
-    var vm = this;
 
+    var vm = this;
+    
+
+    vm.firstName = 'George';
+    vm.state = 'none';
+
+    vm.onClick = function() {
+      vm.firstName = 'Stacy';
+    };
+
+    vm.onMouseEnter = function() {
+      vm.state = 'mouse in';
+      vm.firstName = 'Nick';
+    };
+
+    vm.onMouseLeave = function() {
+      vm.state = 'mouse out';
+      vm.firstName = 'Micle';
+    };   
+
+
+
+    
     vm.filterList = presets.filterList;
 
     vm.filter = 'all';
@@ -25,7 +47,12 @@
     vm.modalUpdate = function(selectedCustomer) {
       var scope = $scope;
       var dlgCust = customerModal.editCustomer(scope, selectedCustomer);
-      dlgCust.result.then(function() {
+      dlgCust.result.catch(function(res) {
+        if (!(res === 'cancel' || res === 'escape key press')) {
+          throw res;
+        }
+      }).then(function() {
+
         //if(selectedCustomer === false) 
         console.log('customer');
         vm.getPageCustomers();
@@ -127,12 +154,12 @@
           number: number,
           numberOfPages: Math.ceil(total / vm.itemsPerPage) //set the number of pages so the pagination can update
         };
+
         if(items) {
           vm.customers = items;
           if(vm.currentItem >= items.length) {
             vm.currentItem = 0;
           }
-
           if (items.length > 0) {
             vm.select(vm.customers[vm.currentItem],vm.currentItem);
           }
@@ -152,6 +179,7 @@
     vm.select = function(customer, index) {
       if(customer) {
         vm.currentItem = index;
+        vm.customer = customer;
  //       localStorageService.set('currentItem',index);
    //     $state.go('customers.list.view', { customerId: customer._id });
       }
@@ -165,7 +193,6 @@
       $state.go('customers.edit', { customerId: customer._id });
       $event.stopImmediatePropagation();
     };
-
 
     vm.delete = function(customer) {
  

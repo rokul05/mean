@@ -32,6 +32,7 @@
     inject: true,
     register: true,
     sinon: true,
-    _: false
+    environment: true,
+    _: true
   }
 }
