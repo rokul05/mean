@@ -1,35 +1,26 @@
-(function () {
-  'use strict';
 
-  angular
-    .module('customers')
-    .service('CustomerModal', CustomerModalServise);
+'use strict';
 
-  CustomerModalServise.$inject = ['$uibModal', 'CustomersService'];
+angular.module('customers').service('CustomerUtils', ['$uibModal', 'CustomersService', 'dialogs', '$state',
+  function ($modal, customers, dialogs, $state) {
 
-  function CustomerModalServise($modal, Customers) {
     var vm = this;
 
     vm.editCustomer = function($scope, selectedCustomer) {
-
-
       return $modal.open({
- 
-        templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
+        templateUrl: 'modules/customers/client/views/modal-customer.client.view.html',
+
         controller: function ($scope, $uibModalInstance, customer) {
           $scope.customer = customer;
           console.log('Modal',$uibModalInstance);
-    
           $scope.ok = function () {
             $uibModalInstance.close($scope.customer);
-   //         $scope.customers.push($scope.customer);
-
           };
-
           $scope.cancel = function () {
             $uibModalInstance.dismiss('cancel');
           };
         },
+
         size: 'lg',
 
         resolve: {
@@ -38,44 +29,50 @@
           }
         }
       });
-
-   
-/*      var modalInstance = $modal.open({
- 
-        templateUrl: 'modules/customers/client/views/form-customer.client.view.html',
-        controller: function ($scope, $uibmodalInstance, customer) {
-          $scope.customer = customer;
-
-          $scope.ok = function () {
-            $uibmodalInstance.close($scope.customer);
-   //         $scope.customers.push($scope.customer);
-
-          };
-
-          $scope.cancel = function () {
-            $uibmodalInstance.dismiss('cancel');
-          };
-        },
-        size: 'lg',
-
-        resolve: {
-          customer: function () {
-            return selectedCustomer;
-          }
-        }
-      });
-
-      modalInstance.result.then(function (selectedItem) {
-        //$scope.customers = Customers.query();
-        //console.log('customer', $scope.customers);
-        $scope.selected = selectedItem;}, function () {
- //       $log.info('Modal dismissed at: ' + new Date());
-      });
-
-      */
     };
-  
 
 
-  }
-})();
+    vm.update = function(selectedCustomer, $scope, dublicated) {
+      var scope = $scope;
+      if(!selectedCustomer) selectedCustomer = new customers();
+      else if(dublicated) selectedCustomer._id = null; 
+      console.log('DUBLICATED', selectedCustomer);
+      var dlgCust = vm.editCustomer(scope, selectedCustomer);
+
+      return (
+        dlgCust.result.catch(function(res) {
+          if (!(res === 'cancel' || res === 'escape key press')) {
+            throw res;
+          }
+        }));
+    };
+
+
+    vm.deleteDealog = function(customer, customers) {
+      var title = 'Delete Customer';
+      var mes = 'Do you wish to delete the customer?';
+      var opt = { yesLabel: 'Delete', noLabel: 'Cancel' };
+      var dlg = dialogs.confirm(title, mes, opt);
+
+      return (
+        dlg.result.then(function(res) {
+          if (customer) {
+            customer.$remove();
+            for (var i in customers) {
+              if (customers[i] === customer) {
+                customers.splice(i, 1);
+                break;
+              }
+            }
+          } else {
+            customer.$remove(function () {
+              $state.go('customers.list');
+            });
+          }
+        }));
+    };
+
+
+
+  }]);
+

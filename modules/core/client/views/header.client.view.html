@@ -9,8 +9,6 @@
     <a ui-sref="home" class="navbar-brand">MEAN.JS</a>
   </div>
 
-
-
   <div id="navbar" class="navbar-collapse" uib-collapse="!isNavCollapsed">
     <ul class="nav navbar-nav" ng-if="menu.shouldRender(authentication.user);">
       <li ng-repeat="item in menu.items | orderBy: 'position'" ng-if="item.shouldRender(authentication.user);" ng-switch="item.type" ng-class="{ active: $state.includes(item.state), dropdown: item.type === 'dropdown' }" class="{{item.class}}" uib-dropdown="item.type === 'dropdown'">
@@ -25,6 +23,69 @@
         <a ng-switch-default ui-sref="{{item.state}}">{{getMenuTitle(item)}}</a>
       </li>
     </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+         <!--
+          <li class="dropdown" uib-dropdown>
+            <a class="dropdown-toggle user-header-dropdown-toggle" uib-dropdown-toggle role="button">
+            <span >{{currentLanguage.value}}<b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+              <li ng-repeat="lang in vm.languages" ng-class="{'active' : currentLanguage.value == lang.value}">
+                <a ng-click="vm.switchLanguage(lang)">{{lang.name}}</a>
+              </li>
+            </ul>
+          </li>-->
+          <li ut-hide-desktop ui-sref-active="active" ng-hide="authentication.user">
+            <a ui-sref="authentication.signin">Sign in</a>
+          </li>
+          <li class="dropdown" uib-dropdown >
+            <a class="dropdown-toggle user-header-dropdown-toggle" uib-dropdown-toggle role="button">
+              <img ng-hide="true" ng-src="{{authentication.user.profileImageURL}}" alt="{{authentication.user.displayName}}" class="header-profile-image" />
+              <span class="glyphicon glyphicon-user"></span><span class="caret"></span>
+            </a>
+
+            <!-- menu in desktop mode -->
+            <ul ut-visible-desktop class="dropdown-menu" role="menu">
+              <li ut-visible-desktop>
+                <a ng-click="exitApp()">Exit</a>
+              </li>
+            </ul>
+
+            <ul ut-hide-desktop class="dropdown-menu" role="menu" ng-show="authentication.user">
+              <li ut-hide-desktop ui-sref-active="active">
+                <a ui-sref="settings.profile">Edit Profile</a>
+              </li>
+    <!--
+              <li ui-sref-active="active">
+                <a ui-sref="settings.picture">Change Profile Picture</a>
+              </li>
+    -->
+              <li ut-hide-desktop ui-sref-active="active" ng-show="authentication.user.provider === 'local'">
+                <a ui-sref="settings.password">Change Password</a>
+              </li>
+    <!--
+              <li ui-sref-active="active">
+                <a ui-sref="settings.accounts">Manage Social Accounts</a>
+              </li>
+              <li class="divider"></li>
+    -->
+              <li ut-hide-desktop role="separator" class="divider"></li>
+              <li> <!--ut-hide-desktop-->
+                <a href="/api/auth/signout" target="_self">Sign out</a>
+              </li>
+
+              <li ut-visible-desktop>
+                <a ng-click="exitApp()">Exit</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+
+
+
+
+<!--    
     <ul class="nav navbar-nav navbar-right" ng-hide="authentication.user">
       <li ui-sref-active="active">
         <a ui-sref="authentication.signup">Sign Up</a>
@@ -59,6 +120,6 @@
           </li>
         </ul>
       </li>
-    </ul>
+    </ul>-->
   </div>
 </div>

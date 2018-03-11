@@ -1,0 +1,15 @@
+<section ng-controller="CustomersController">
+  <div class="modal-header" style="padding: 50px 50px 0 50px">
+    <h1>{{customer._id ? 'Update: '+customer.firstName+' '+ customer.surname : 'New Customer'}}</h1>
+  </div>
+  <div class="modal-body" style="padding: 0 50px 0 50px">
+    <form name="customerForm">
+      <div ng-include="'modules/customers/client/views/form-customer.client.view.html'"></div>
+    </form>
+  </div>
+  <div class="modal-footer" style="padding: 0 50px 50px 0">
+    <button class="btn btn-success btn-lg" ng-click="create(customerForm.$valid, listMode)" ng-disabled="customerForm.$invalid">{{customer._id ? 'Update' : 'Create'}}</button>
+    <button class="btn btn-warning btn-lg" ng-click="cancel()">Cansel</button>
+  </div>
+<pre>{{customer | json }}</pre>
+</section>

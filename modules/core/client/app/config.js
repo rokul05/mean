@@ -12,7 +12,7 @@ var ApplicationConfiguration = (function () {
     'ui.bootstrap',
     'ui.utils',
     'smart-table',
-//    'angularFileUpload',
+    'angularFileUpload',
     'ui.toggle'//,
 //    'react'
   ];

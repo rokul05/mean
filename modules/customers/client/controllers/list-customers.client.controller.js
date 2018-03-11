@@ -5,9 +5,9 @@
     .module('customers')
     .controller('CustomersListController', CustomersListController);
 
-  CustomersListController.$inject = ['$rootScope', '$scope', 'CustomersService', '$state', 'Presets', 'CustomerModal', 'dialogs', 'Menus'];
+  CustomersListController.$inject = ['$rootScope', '$scope', 'CustomersService', '$state', 'Presets', 'CustomerUtils', 'Menus'];
 
-  function CustomersListController($rootScope, $scope, customers, $state, presets, customerModal, dialogs, menus){
+  function CustomersListController($rootScope, $scope, customers, $state, presets, customerUtils, menus){
 
   /*
     if (DesktopApplication.enabled) {
@@ -17,7 +17,15 @@
   */
 
     var vm = this;
-    
+    $scope.customerForm = 'customerFormView';
+    $scope.read = true;
+    $scope.maxHeight = '90%';
+    $scope.maxWidth = '90%';
+
+    if($scope.customer) $scope.image = $scope.customer.image;
+    $scope.presets = presets;
+
+    vm.currentItem = 0;
 
     vm.firstName = 'George';
     vm.state = 'none';
@@ -37,33 +45,15 @@
     };   
 
 
-
     
     vm.filterList = presets.filterList;
 
     vm.filter = 'all';
     $scope.listMode = 'list';
 
-    vm.modalUpdate = function(selectedCustomer) {
-      var scope = $scope;
-      var dlgCust = customerModal.editCustomer(scope, selectedCustomer);
-      dlgCust.result.catch(function(res) {
-        if (!(res === 'cancel' || res === 'escape key press')) {
-          throw res;
-        }
-      }).then(function() {
-
-        //if(selectedCustomer === false) 
-        console.log('customer');
-        vm.getPageCustomers();
-        //return res;
-      });
-      
-    };
-
 
     if($state.current.name === 'customers.create') {
-      vm.modalUpdate();
+      vm.update();
       $state.go('customers.list');
       menus.removeSubMenuItem('topbar', 'customers.create');
  //     console.log('menu - ', menus.getMenu('topbar'));
@@ -78,7 +68,7 @@
         $scope.tableState.search.predicateObject = { '$':'' };
       vm.getPageCustomers();
     };
-    console.log('state - ',$state.current.name);
+  //  console.log('state - ',$state.current.name);
 
 
     vm.searchValue = null;
@@ -98,7 +88,7 @@
     vm.setItemsPerPage = function(itemsPage) {
       vm.itemsPerPage = itemsPage;
 //      localStorageService.set('itemsPerPage',itemsPage);
-      console.debug('itemsPerPage - '+ vm.itemsPerPage);
+//      console.debug('itemsPerPage - '+ vm.itemsPerPage);
     };
 
     //Local Storage Service
@@ -125,13 +115,10 @@
 
       tableState.pagination.number = vm.itemsPerPage;
       vm.setItemsPerPage(vm.itemsPerPage);
-      //console.debug('Call server', tableState);
       if (tableState === undefined) {
-        console.log('nothing to do');
         return;
       }
       if (vm.isLoading) {
-        console.log('skipping');
         return;
       }
 
@@ -141,7 +128,7 @@
       var number = tableState.pagination.number || 10;  // Number of entries showed per page.
       var sort = JSON.stringify(tableState.sort);
       var search = JSON.stringify(tableState.search.predicateObject);
-      console.log('Search',JSON.stringify(tableState.search.predicateObject));
+      //console.log('Search',JSON.stringify(tableState.search.predicateObject));
  
       var items = customers.query({ start: start, number: number, search: search, sort:sort }, function(data, responseHeaders) {
         
@@ -160,83 +147,65 @@
           if(vm.currentItem >= items.length) {
             vm.currentItem = 0;
           }
+//          console.log("ITEM", vm.currentItem);
           if (items.length > 0) {
-            vm.select(vm.customers[vm.currentItem],vm.currentItem);
+            vm.select(vm.customers[vm.currentItem], vm.currentItem);
           }
         }
-        
         vm.isLoading = false;
-        
-        console.log('tableState', $scope.tableState);
-        console.log('done loading');
       });
     };
 
-    vm.isSelected = function(customer) {
-      return (customer._id === $state.params.customerId);
+    vm.isSelected = function(item) {
+      return (vm.currentItem === item);
     };
 
+/*    vm.isSelected = function(customer) {
+      return (customer._id === $state.params.customerId);
+    };
+*/
     vm.select = function(customer, index) {
       if(customer) {
         vm.currentItem = index;
-        vm.customer = customer;
+        $scope.customer = customer;
+        $scope.image = $scope.customer.image;
+
  //       localStorageService.set('currentItem',index);
    //     $state.go('customers.list.view', { customerId: customer._id });
       }
     };
 
+
+    vm.update = function(selectedCustomer) {
+      customerUtils.update(selectedCustomer, $scope).then(function() {
+        vm.getPageCustomers();
+      });
+    };
+
+
+    vm.duplicate = function(selectedCustomer) {
+      var res = customerUtils.update(selectedCustomer, $scope, true).then(function() {
+        if(res) {
+          vm.currentItem ++;
+          vm.getPageCustomers();
+        }
+      });
+    };
+
+/*
     vm.edit = function(customer, index, $event) {
-      console.log('edit ', customer._id);
-      //console.log($event);
       vm.currentItem = index;
 //      localStorageService.set('currentItem',index);
       $state.go('customers.edit', { customerId: customer._id });
       $event.stopImmediatePropagation();
     };
-
+*/
     vm.delete = function(customer) {
- 
-      var title = 'Delete Template';
-      var mes = 'Do you wish to delete the customer?';
-
-      var dlg = dialogs.confirm(title, mes,
-        {
-          yesLabel: 'Delete',
-          noLabel: 'Cancel'
-        });
-      dlg.result.then(function(/*reason*/) {
-
-        if (customer) {
-          customer.$remove();
-          for (var i in vm.customers) {
-            if (vm.customers[i] === customer) {
-              vm.customers.splice(i, 1);
-              break;
-            }
-          }
-        } else {
-          vm.customer.$remove(function () {
-            $state.go('customers.list');
-          });
-        }        
-  /*      if (customer) {
-          var i;
-          for (i in vm.customers) {
-            if (vm.customers[i] === customer) {
-              vm.customers.splice(i, 1);
-              customer.$remove();
-              if(i >= vm.customers.length)
-                i--; 
-              break;
-            }
-          }
-          if(vm.customers.length > 0) {
-//            $state.go('customers.list.view', {
-            $state.go('customers.list', {
-        //      customersId: vm.customers[i]._id
-            });
-          }
-        }*/
+      var res = customerUtils.deleteDealog(customer, vm.customers).then(function() {
+        if(res) {
+          vm.currentItem = (vm.currentItem > 0) ? vm.currentItem-- : 0;
+          vm.getPageCustomers();
+        }
       });
     };
 

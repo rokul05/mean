@@ -1,30 +1,36 @@
 <section>
   <div class="page-header">
-    <h1>Customers</h1>
+    <!--<h3>Customers</h3>-->
   </div>
   <div class="row">
-    <div class="col-xs-12 col-sm-8">
-      <div class="input-group input-group-lg">
-        <input type="text" class="form-control" ng-model="searchText" placeholder="Search...">
-        <span class="input-group-btn">
-          <button class="btn btn-secondary" type="button">Go!</button>
+    <div class="col-xs-12 col-md-8"">
+      <div class="input-group">
+        <a class="btn white-color btn-primary pull-right" ng-click="vm.update()" ui-sref-active="hide" title="{{'Create a new customer'}}"><span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;<span>Add</span></a>
 
+        <div class="input-group-btn input-group-btn-custom" uib-dropdown>
+          <button type="button" class="btn filter-button dropdown-toggle" uib-dropdown-toggle>
+            <span class="glyphicon glyphicon-filter align-middle-glyphicon"></span>
+          </button>
+          <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="split-button">
+            <li ng-repeat="filter in vm.filterList" ng-class="{'active' : vm.filter == filter.value, divider:filter.value==false}">
+              <a ng-click="vm.setFilter($index)" ng-if="filter.value">{{filter.label}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="input-group search-custom">
+        <input type="text" class="form-control" ng-model="vm.searchValue" placeholder="Search..."><!--ng-change="vm.search('text')"-->
+        <span class="input-group-btn">
+          <button class="btn search-button" type="button"><span class="glyphicon glyphicon-search" ng-click="vm.search()"></span></button>
         </span>
       </div>
     </div>
-    <div class="col-xs-12 col-sm-4 text-center">
-      <button type="button" class="btn btn-success text-center" ng-click="modalUpdate()">
-        <i class="glyphicon glyphicon-user"></i> 
-        New customer
-      </button>
-    </div>
   </div>
+
   <!--<customer-list></customer-list>-->
-
-  <div ng-repeat="customer in vm.customers">
-    <ut-customer-detail customer="customer" on-click="vm.onClick"></ut-customer-detail>
+  <div class="col-xs-12 form-group-size">
+    <ut-customers-view customers="vm.customers" on-edit="vm.update" on-duplicate="vm.duplicate" on-delete="vm.delete"></ut-customers-view>
   </div>
-
 </section>
 
 <!--<pre class="col-xs-10 col-xs-offset=1">{{vm.customers | json }}</pre>-->

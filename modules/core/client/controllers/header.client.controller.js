@@ -10,14 +10,14 @@ angular.module('core').controller('HeaderController', ['$scope', '$state', 'Auth
     $scope.menu = Menus.getMenu('topbar');
 
     // Toggle the menu items
-    $scope.isCollapsed = false;
+    $scope.isNavCollapsed = false;
     $scope.toggleCollapsibleMenu = function () {
-      $scope.isCollapsed = !$scope.isCollapsed;
+      $scope.isNavCollapsed = !$scope.isNavCollapsed;
     };
 
     // Collapsing the menu after navigation
     $scope.$on('$stateChangeSuccess', function () {
-      $scope.isCollapsed = false;
+      $scope.isNavCollapsed = false;
     });
 /*
     $scope.exitApp = function() {

@@ -6,47 +6,40 @@
     .controller('CustomersListIconController', CustomersListIconController);
 
 
-  CustomersListIconController.$inject = ['$scope', '$state', 'CustomersService', '$uibModal', '$log', 'CustomerModal'];
+  CustomersListIconController.$inject = ['$scope', '$state', 'CustomersService', '$uibModal', 'CustomerUtils'];
 
-  function CustomersListIconController($scope, $state, customers, $modal, $log, customerModal) {
+  function CustomersListIconController($scope, $state, customers, $modal, customerUtils) {
 
     var vm = this;
     vm.customer = {
       firstName: '',
       surname: ''
     }; 
+    $scope.listMode = 'icon';
 
     var result = customers.query(function() {
       if(result) {
         vm.customers = result;
-      //  vm.customer = vm.customers[0];
       }
     });
+   
 
-
-    
-    $scope.listMode = 'icon';
-
-    $scope.modalUpdate = function(selectedCustomer) {
-      var scope = $scope;
-      customerModal.editCustomer(scope, selectedCustomer);
+    vm.update = function(selectedCustomer) {
+      customerUtils.update(selectedCustomer, $scope).then(function() {
+      });
     };
 
-
-    vm.firstName = 'George';
-    vm.state = 'none';
-
-    vm.onClick = function() {
-      vm.firstName = 'Stacy';
+    vm.duplicate = function(selectedCustomer) {
+      customerUtils.update(selectedCustomer, $scope, true).then(function() {
+      });
     };
-    
-    
-/*
-	  // Find a list of customer
-    $scope.find = function () {
-      $scope.customers = customers.query();
-      console.log('customers -', $scope.customers);
+
+    vm.delete = function(customer) {
+      customerUtils.deleteDealog(customer, vm.customers).then(function(res) {
+      });
     };
-*/
+
+    
+
   }
 }());

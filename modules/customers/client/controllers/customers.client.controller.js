@@ -11,7 +11,11 @@
   function CustomersController ($scope, $state, $stateParams, $location, Authentication, Customers, Notify, presets, upload) {
 
     var vm = this;
-    vm.customer = {};
+    $scope.customerForm = 'customerFormEdit';
+    $scope.maxHeight = '70%';
+    $scope.maxWidth = '70%';
+
+
     $scope.file = {};
     $scope.authentication = Authentication;
     $scope.customers = Customers.query();
@@ -22,46 +26,21 @@
 
     };
 
-/*
-    $scope.customersCount = Customers.countCustomers(function(data) {
-      $scope.customersCount = data;
-      console.log('Virtual customers ', $scope.customersCount);
-    });*/
-/*
-    $scope.selectFile = function() {
-      var fileTypes = [
-        'image/jpeg',
-        'image/pjpeg',
-        'image/png'];
-      fileDialog.selectFile(function(file) {
- //       vm.customer.image = file;
-        $scope.image = file;
-        $scope.contentType = 'image/jpeg';
-        console.log('selected file:', file);
-        if($scope.customer) {
-          $scope.customer.image.data = $scope.image;
-          $scope.customer.image.contentType = $scope.contentType;
-        }
-      }, fileTypes);
-    };
-
-*/
-//    $scope.customers = angular.copy(Customers);
 
     // Create new customer
-//    $scope.create = function (isValid) {
     $scope.create = function (isValid, listMode) {
       $scope.error = null;
-
-      if($scope.customer._id) {
-        return $scope.update(isValid);
-      }
-     
+      
       if (!isValid) {
         $scope.$broadcast('show-errors-check-validity', 'customerForm');
 
         return false;
       }
+
+      if($scope.customer && $scope.customer._id) {
+        return $scope.update(true);
+      }
+
       // Create new customer object
       var customer = new Customers({
         firstName: this.customer.firstName,

@@ -4,11 +4,13 @@
 angular.module(ApplicationConfiguration.applicationModuleName, ApplicationConfiguration.applicationModuleVendorDependencies);
 
 // Setting HTML5 Location Mode
-angular.module(ApplicationConfiguration.applicationModuleName).config(['$locationProvider', '$httpProvider',
-  function ($locationProvider, $httpProvider) {
+angular.module(ApplicationConfiguration.applicationModuleName).config(['$locationProvider', '$httpProvider', '$qProvider',
+  function ($locationProvider, $httpProvider, $qProvider) {
     $locationProvider.html5Mode(true).hashPrefix('!');
 
     $httpProvider.interceptors.push('authInterceptor');
+
+    $qProvider.errorOnUnhandledRejections(false);
   }
 ]);
 
