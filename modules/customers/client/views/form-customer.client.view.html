@@ -6,7 +6,7 @@
       </alert>
 
       <div class="col-sm-6 text-center">
-        <img ng-if="image" ng-src="{{image}}" ng-style="{ 'max-height' : maxHeight, 'max-width' : maxWidth }"/>
+        <img ng-if="image" ng-src="{{image}}" ng-style="{ 'max-height' : maxHeight, 'max-width' : maxWidth, cursor : ' ' }"/>
         <i ng-hide="image" class="glyphicon glyphicon-user cust-profile" ng-class="{'text-primary':customer.referred, 'text-pink':!customer.referred}"></i>
       </div>
 

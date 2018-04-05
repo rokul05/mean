@@ -13,7 +13,8 @@ var ApplicationConfiguration = (function () {
     'ui.utils',
     'smart-table',
     'angularFileUpload',
-    'ui.toggle'//,
+    'ui.toggle',
+    'angularSuperGallery'
 //    'react'
   ];
 

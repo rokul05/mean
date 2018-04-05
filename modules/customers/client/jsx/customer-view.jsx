@@ -14,14 +14,22 @@ class ReactCustomerDetail extends React.Component {
       'text-pink':!customer.referred
     };
 
+    var self = this;
+    var handleShowimage = function(event) {
+      if (self.props.onShowimage) {
+        self.props.onShowimage(customer);
+      }
+    };
+
     if(customer.image) {
       var imageStyle = {
         height: '11vmax',
-        maxHeight: 120
+        maxHeight: 120,
+        cursor: 'pointer'
       };
 
       return (
-        <img src={customer.image} style={imageStyle}/>
+        <img src={customer.image} style={imageStyle} onClick={handleShowimage} />
       )
     }
     else {
@@ -45,10 +53,7 @@ class ReactCustomerDetail extends React.Component {
       height: 250,
       minWidth: 200
     };
-    var imageStyle = {
-      height: 120,
-      minWidth: 100
-    };
+
     var rowStyle = {
       position: 'absolute',
       width: '100%',
@@ -75,11 +80,12 @@ class ReactCustomerDetail extends React.Component {
       }
     };
 
+
     return (
       <div className="list-group">
         <div className="col-xs-12 col-sm-6 col-lg-4 extra-space">
           <a className="list-group-item" style={infoStyle}>
-            <h4 className="cust-list text-center" style={imageStyle}>
+            <h4 className="cust-list text-center">
               {this.renderImage(customer)}
             </h4>
             <div className="row" style={rowStyle}>
@@ -109,6 +115,7 @@ ReactCustomerDetail.propTypes = {
   onEdit : React.PropTypes.func,
   onDuplicate : React.PropTypes.func,
   onDelete : React.PropTypes.func,
+  onShowimage : React.PropTypes.func,
   utils: React.PropTypes.object.isRequired
 };
 

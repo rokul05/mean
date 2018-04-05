@@ -5,7 +5,8 @@
   <div class="row">
     <div class="col-xs-12 col-md-8"">
       <div class="input-group">
-        <a class="btn white-color btn-primary pull-right" ng-click="vm.update()" ui-sref-active="hide" title="{{'Create a new customer'}}"><span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;<span>Add</span></a>
+        <a class="btn white-color btn-primary pull-right" ng-click="vm.update()" ui-sref-active="hide" title="{{'Create a new customer'}}"><span class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;<span>Add</span>
+        </a>
 
         <div class="input-group-btn input-group-btn-custom" uib-dropdown>
           <button type="button" class="btn filter-button dropdown-toggle" uib-dropdown-toggle>
@@ -29,8 +30,27 @@
 
   <!--<customer-list></customer-list>-->
   <div class="col-xs-12 form-group-size">
-    <ut-customers-view customers="vm.customers" on-edit="vm.update" on-duplicate="vm.duplicate" on-delete="vm.delete"></ut-customers-view>
+    <ut-customers-view customers="vm.customers" on-edit="vm.update" on-duplicate="vm.duplicate" on-delete="vm.delete" on-showimage="vm.showimage"></ut-customers-view>
   </div>
+
+  <div class="panel-body asg-custom">
+
+   <!-- <pre data-ng-if="showOptions1">{{ vm.options1|json}}</pre>-->
+
+    <!-- ASG BEGIN -->
+    <asg-image data-id="nature" data-options="vm.options1" data-items="vm.files1">
+      <asg-modal>
+        <asg-thumbnail></asg-thumbnail>
+      </asg-modal>
+    </asg-image>
+    <asg-thumbnail data-id="nature"></asg-thumbnail>
+    <hr>
+    <strong>custom panel</strong> | auto select the image when mouseover
+    <asg-panel data-id="nature" class="custom-panel" data-options="vm.options1" data-items="vm.files1"></asg-panel>
+    <!-- ASG END -->
+
+  </div>  
+
 </section>
 
 <!--<pre class="col-xs-10 col-xs-offset=1">{{vm.customers | json }}</pre>-->

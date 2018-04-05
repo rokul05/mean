@@ -5,7 +5,8 @@ module.exports = {
     lib: {
       css: [
         'public/lib/bootstrap/dist/css/bootstrap.css',
-        'public/lib/angular-bootstrap-toggle/dist/angular-bootstrap-toggle.min.css'
+        'public/lib/angular-bootstrap-toggle/dist/angular-bootstrap-toggle.min.css',
+        'public/lib/angular-super-gallery/dist/angular-super-gallery.css'
       ],
       js: [
         'public/lib/jquery/dist/jquery.min.js',
@@ -26,7 +27,10 @@ module.exports = {
         'public/lib/jquery.uniform/dist/jquery.uniform.min.js',
         'public/lib/lodash/dist/lodash.min.js',
         'public/lib/angular-bootstrap-toggle/dist/angular-bootstrap-toggle.js',
-        'public/lib/classnames/index.js'
+        'public/lib/classnames/index.js',
+        'public/lib/angular-touch/angular-touch.js',
+        'public/lib/screenfull/dist/screenfull.js',
+        'public/lib/angular-super-gallery/dist/angular-super-gallery.js'//,
       ]//,
 //      tests: ['public/lib/angular-mocks/angular-mocks.js']
     },

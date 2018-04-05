@@ -9,8 +9,7 @@ module.exports = {
         'public/lib/angular-bootstrap-toggle/dist/angular-bootstrap-toggle.min.css',
         'public/theme/css/theme.min.css',
         'public/lib/seiyria-bootstrap-slider/dist/css/bootstrap-slider.min.css',
-        'public/lib/angular-color-picker/dist/angularjs-color-picker.min.css',
-        'public/lib/angular-color-picker/dist/angularjs-color-picker-bootstrap.min.css'
+        'public/lib/angular-super-gallery/dist/angular-super-gallery.min.css'
       ],
       js: [
         'public/lib/jquery/dist/jquery.min.js',
@@ -31,7 +30,10 @@ module.exports = {
         'public/lib/jquery.uniform/dist/jquery.uniform.min.js',
         'public/lib/lodash/dist/lodash.min.js',
         'public/lib/angular-bootstrap-toggle/dist/angular-bootstrap-toggle.min.js',
-        'public/lib/classnames/index.js'//,
+        'public/lib/classnames/index.js',
+        'public/lib/angular-touch/angular-touch.min.js',
+        'public/lib/screenfull/dist/screenfull.min.js',
+        'public/lib/angular-super-gallery/dist/angular-super-gallery.min.js'//,
       ]
     },
     css: 'public/dist/application.min.css',

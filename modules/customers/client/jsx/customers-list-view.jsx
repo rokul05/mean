@@ -16,6 +16,7 @@ class ReactCustomersView extends React.Component {
           onEdit={this.props.onEdit}
           onDuplicate={this.props.onDuplicate}
           onDelete={this.props.onDelete}
+          onShowimage={this.props.onShowimage}
           utils={this.props.utils}>
         </ReactCustomerDetail>
       );
@@ -41,6 +42,7 @@ ReactCustomersView.propTypes = {
   onEdit : React.PropTypes.func,
   onDuplicate : React.PropTypes.func,
   onDelete : React.PropTypes.func,
+  onShowimage : React.PropTypes.func,
   utils: React.PropTypes.object.isRequired
 };
 
